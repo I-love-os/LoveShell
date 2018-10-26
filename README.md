@@ -1,6 +1,6 @@
 # LoveShell
 
-TODO: Write a description here
+Customizable shell made with love
 
 ## Installation
 
@@ -24,4 +24,6 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [your-github-user](https://github.com/your-github-user) your-name-here - creator, maintainer
+- [maak4422](https://github.com/maak4422 - creator, maintainer
+- [yknomeh](https://github.com/yknomeh - creator, maintainer
+- [MineBartekSA](https://github.com/MineBartekSA - creator, maintainer

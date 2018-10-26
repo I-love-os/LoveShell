@@ -2,13 +2,14 @@ require "fancyline"
 require "colorize"
 require "user_group"
 require "../src/prompt"
+require "./historian"
 
 module LoveShell
   VERSION = "0.1.0"
 
   prompt = Prompt.new
-
   fancy = Fancyline.new
+  historian = Historian.new
 
   fancy.display.add do |ctx, line, yielder|
     line = line.gsub(/^\w+/, &.colorize(:light_red).mode(:underline))
@@ -34,11 +35,22 @@ module LoveShell
     #Do Nothing
   end
 
+  fancy.actions.set Fancyline::Key::Control::Up do |ctx|
+    ctx.editor.line = historian.getEntryUp
+  end
+
+  fancy.actions.set Fancyline::Key::Control::Down do |ctx|
+    ctx.editor.line = historian.getEntryDown
+  end
+
+  historian.log(%(#<3# Opened LoveShell instance with PID ) + "#{Process.pid}" + " on " + "#{Time.now}")
+
   begin
     while input = fancy.readline(prompt.prompt, rprompt: prompt.time)
+      historian.log(input)
       args = input.split(" ")
       break if input == "exit"
-    
+
       if args[0] == "cd"
         begin
           Dir.cd(args[1].sub("~", "/home/#{Process.user}"))
@@ -46,10 +58,12 @@ module LoveShell
           puts exception
         end
       else
-        system(input)  
+        system(input)
       end
-    end 
+    end
+    historian.log(%(#<3# Closed LoveShell instance with PID ) + "#{Process.pid}" + " on " + "#{Time.now}")
   rescue err : Fancyline::Interrupt
     puts "<3".colorize(:red).mode(:bold)
+    historian.log(%(#<3# LoveShell instance with PID ) + "#{Process.pid}" + " interrupted on " + "#{Time.now}")
   end
 end

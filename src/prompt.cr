@@ -10,5 +10,10 @@ class Prompt
     #{"] ".colorize(:red)}\
     #{Dir.current.sub("/home/#{Process.user}", "~").colorize.mode(:bold)}\
     #{" ->".colorize(:light_red)} ".to_s
-	end
+  end
+  
+  def time : String
+    time = Time.now
+    "(#{time.hour}:#{time.minute}) ".colorize(:light_gray).mode(:bold).to_s
+  end
 end

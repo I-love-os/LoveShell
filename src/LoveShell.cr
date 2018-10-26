@@ -1,10 +1,18 @@
 require "fancyline"
 require "colorize"
+require "user_group"
 
 module LoveShell
   VERSION = "0.1.0"
-  
- prompt = "(~): ".colorize(:red).to_s
+
+ user = Process.user 
+ hostname = System.hostname
+ dir = Dir.current
+ dir_with_tylda = "~#{dir.delete("/home/#{user}")}"
+
+
+
+ prompt = "#{"[".colorize(:red)}#{user.colorize(:yellow)}#{"@".colorize(:red)}#{hostname.colorize(:yellow)}#{"]".colorize(:red)} #{dir_with_tylda.colorize.mode(:bold)}#{" ->".colorize(:light_red)} ".to_s
  fancy = Fancyline.new
 
  fancy.display.add do |ctx, line, yielder|
@@ -22,7 +30,6 @@ module LoveShell
   while input = fancy.readline(prompt)
     break if input == "exit"
     
-
     system(input)
   end  
 end

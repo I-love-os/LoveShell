@@ -11,6 +11,8 @@ targets:
 dependencies:
   fancyline:
     github: Papierkorb/fancyline    
+  user_group:
+    github: chris-huxtable/user_group.cr  
 
 crystal: 0.26.1
 

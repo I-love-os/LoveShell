@@ -18,8 +18,9 @@ module LoveShell
     yielder.call ctx, line
   end
 
-  while input = fancy.readline(":")
+  while input = fancy.readline("xD ".colorize(:red).to_s)
     break if input == "exit"
+    
 
     system(input)
   end  

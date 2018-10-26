@@ -22,6 +22,18 @@ module LoveShell
     yielder.call ctx, line
   end
 
+  fancy.actions.set Fancyline::Key::Control::CtrlC do |ctx|
+    #Do Nothing
+  end
+
+  Signal::INT.trap do
+    #Do Nothing
+  end
+
+  fancy.actions.set Fancyline::Key::Control::CtrlD do |ctx|
+    #Do Nothing
+  end
+
   begin
     while input = fancy.readline(prompt.prompt, rprompt: prompt.time)
       args = input.split(" ")

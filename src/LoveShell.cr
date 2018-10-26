@@ -4,7 +4,7 @@ require "colorize"
 module LoveShell
   VERSION = "0.1.0"
   
- prompt = "(LOVE): ".colorize(:red)
+ prompt = "(~): ".colorize(:red).to_s
  fancy = Fancyline.new
 
  fancy.display.add do |ctx, line, yielder|
@@ -14,11 +14,12 @@ module LoveShell
     end
 
     line = line.gsub(/--?\w+/, &.colorize(:red))
+    line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(:red))
 
     yielder.call ctx, line
   end
 
-  while input = fancy.readline("xD ".colorize(:red).to_s)
+  while input = fancy.readline(prompt)
     break if input == "exit"
     
 

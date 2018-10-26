@@ -22,18 +22,22 @@ module LoveShell
     yielder.call ctx, line
   end
 
-  while input = fancy.readline(prompt.prompt)
-    args = input.split(" ")
-    break if input == "exit"
+  begin
+    while input = fancy.readline(prompt.prompt, rprompt: prompt.time)
+      args = input.split(" ")
+      break if input == "exit"
     
-    if args[0] == "cd"
-      begin
-        Dir.cd(args[1].sub("~", "/home/#{Process.user}"))
-      rescue exception
-        puts exception
+      if args[0] == "cd"
+        begin
+          Dir.cd(args[1].sub("~", "/home/#{Process.user}"))
+        rescue exception
+          puts exception
+        end
+      else
+        system(input)  
       end
-    else
-      system(input)  
-    end
-  end  
+    end 
+  rescue err : Fancyline::Interrupt
+    puts "<3".colorize(:red).mode(:bold)
+  end
 end

@@ -1,0 +1,17 @@
+name: LoveShell
+version: 0.1.0
+
+authors:
+  - I-love-os team
+
+targets:
+  LoveShell:
+    main: src/LoveShell.cr
+
+dependencies:
+  fancyline:
+    github: Papierkorb/fancyline    
+
+crystal: 0.26.1
+
+license: MIT

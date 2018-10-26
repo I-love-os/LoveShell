@@ -27,9 +27,13 @@ module LoveShell
     break if input == "exit"
     
     if args[0] == "cd"
-      Dir.cd(args[1].sub("~", "/home/#{Process.user}"))
+      begin
+        Dir.cd(args[1].sub("~", "/home/#{Process.user}"))
+      rescue exception
+        puts exception
+      end
+    else
+      system(input)  
     end
-
-    system(input)
   end  
 end

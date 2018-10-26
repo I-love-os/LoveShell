@@ -24,6 +24,6 @@ TODO: Write development instructions here
 
 ## Contributors
 
-- [maak4422](https://github.com/maak4422 - creator, maintainer
-- [yknomeh](https://github.com/yknomeh - creator, maintainer
-- [MineBartekSA](https://github.com/MineBartekSA - creator, maintainer
+- [maak4422](https://github.com/maak4422) - creator, maintainer
+- [yknomeh](https://github.com/yknomeh) - creator, maintainer
+- [MineBartekSA](https://github.com/MineBartekSA) - creator, maintainer

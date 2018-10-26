@@ -16,8 +16,8 @@ module LoveShell
       "#{$1}#{$2.colorize(:light_red).mode(:underline)}"
     end
 
-    line = line.gsub(/--?\w+/, &.colorize(:red))
-    line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(:red))
+    line = line.gsub(/--?\w+/, &.colorize(:magenta))
+    line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(:cyan))
 
     yielder.call ctx, line
   end

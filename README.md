@@ -1,6 +1,6 @@
 # LoveShell
 
-Customizable shell made with love
+Customizable shell made with :heart:
 
 ## Installation
 

@@ -37,6 +37,16 @@ class Historian
     out
   end
 
+  def getCurrentEntry : String
+    if @@position == -1
+      out = ""
+    else
+      histLog = File.read_lines(HISTORY_PATH).reverse
+      out = histLog[@@position].to_s
+    end
+    out  
+  end
+
   def getLength : Int
     File.read_lines(HISTORY_PATH).size
   end

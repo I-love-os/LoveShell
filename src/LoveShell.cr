@@ -36,11 +36,17 @@ module LoveShell
   end
 
   fancy.actions.set Fancyline::Key::Control::Up do |ctx|
-    ctx.editor.line = historian.getEntryUp
+    while true
+      break if historian.getEntryUp[0..3] != "#<3#"
+    end
+    ctx.editor.line = historian.getCurrentEntry
   end
 
   fancy.actions.set Fancyline::Key::Control::Down do |ctx|
-    ctx.editor.line = historian.getEntryDown
+    while true
+      break if historian.getEntryDown[0..3] != "#<3#"
+    end
+    ctx.editor.line = historian.getCurrentEntry
   end
 
   historian.log(%(#<3# Opened LoveShell instance with PID ) + "#{Process.pid}" + " on " + "#{Time.now}")

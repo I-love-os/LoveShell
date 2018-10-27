@@ -4,6 +4,15 @@ require "user_group"
 require "../src/prompt"
 require "./historian"
 
+def get_command(ctx)
+  line = ctx.editor.line
+  cursor = ctx.editor.cursor.clamp(0, line.size - 1)
+  pipe = line.rindex('|', cursor)
+  line = line[(pipe + 1)..-1] if pipe
+
+  line.split.first?
+end
+
 module LoveShell
   VERSION = "0.1.0"
 
@@ -21,6 +30,23 @@ module LoveShell
     line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(:cyan))
 
     yielder.call ctx, line
+  end
+
+  fancy.sub_info.add do |ctx, yielder|
+    lines = yielder.call(ctx) # First run the next part of the middleware chain
+
+    if command = get_command(ctx) # Grab the command
+      help_line = `whatis #{command} 2> /dev/null`.lines.first?
+      lines << help_line if help_line # Display it if we got something
+    end
+
+    lines # Return the lines so far
+  end
+
+  fancy.actions.set Fancyline::Key::Control::CtrlH do |ctx|
+    if command = get_command(ctx)
+      system("man #{command}")
+    end
   end
 
   fancy.actions.set Fancyline::Key::Control::CtrlC do |ctx|

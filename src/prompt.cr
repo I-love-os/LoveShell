@@ -1,9 +1,9 @@
 require "colorize"
 require "user_group"
 
-class Prompt	
+class Prompt
   def prompt : String
-    
+
     dev_prefix = ""
 
     if is_dev?
@@ -19,10 +19,14 @@ class Prompt
     #{Dir.current.sub("/home/#{Process.user}", "~").colorize.mode(:bold)}\
     #{" ->".colorize(:light_red)} ".to_s
   end
-  
+
   def time : String
     time = Time.now
-    "(#{time.hour}:#{time.minute}) ".colorize(:light_gray).mode(:bold).to_s
+		unless time.minute < 10
+    	"(#{time.hour}:#{time.minute}) ".colorize(:light_gray).mode(:bold).to_s
+		else
+			"(#{time.hour}:0#{time.minute}) ".colorize(:light_gray).mode(:bold).to_s
+		end
   end
 
   def is_dev? : Bool

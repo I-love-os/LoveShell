@@ -32,23 +32,36 @@ module LoveShell
     yielder.call ctx, line
   end
 
+
+  help_line_enabled = true
+
   fancy.sub_info.add do |ctx, yielder|
     lines = yielder.call(ctx) # First run the next part of the middleware chain
-
-    if command = get_command(ctx) # Grab the command
+    
+    if (command = get_command(ctx)) && help_line_enabled # Grab the command
       help_line = `whatis #{command} 2> /dev/null`.lines.first?
-      lines << help_line if help_line # Display it if we got something
-    end
+      if help_line
+        words = help_line.to_s.split(" ")
+        words.delete("")
 
+        line = ""
+        words.map{|word| line = "#{line} #{word}" }
+        
+        lines << line    
+      end
+    end
     lines # Return the lines so far
   end
 
-  fancy.actions.set Fancyline::Key::Control::CtrlH do |ctx|
+  fancy.actions.set Fancyline::Key::Control::AltH do |ctx|
     if command = get_command(ctx)
       system("man #{command}")
     end
   end
 
+  fancy.actions.set Fancyline::Key::Control::CtrlH do |ctx|
+    help_line_enabled = !help_line_enabled
+  end
   fancy.actions.set Fancyline::Key::Control::CtrlC do |ctx|
     #Do Nothing
   end

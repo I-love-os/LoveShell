@@ -54,4 +54,8 @@ class Historian
   def getPosition : Int
     @@position
   end
+
+  def resetPosition
+    @@position = -1
+  end
 end

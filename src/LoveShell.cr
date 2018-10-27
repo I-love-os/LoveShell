@@ -58,6 +58,7 @@ module LoveShell
   begin
     while input = fancy.readline(prompt.prompt, rprompt: prompt.time)
       historian.log(input)
+      historian.resetPosition
       args = input.split(" ")
       break if input == "exit"
 

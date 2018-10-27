@@ -1,9 +1,11 @@
 require "./spec_helper"
+require "../src/historian"
 
-describe LoveShell do
-  # TODO: Write tests
-
-  it "works" do
-    false.should eq(true)
+describe Historian do
+  describe "#getPosition" do
+    it "should equal -1" do
+      historian = Historian.new
+      historian.getPosition.should eq -1
+    end
   end
 end

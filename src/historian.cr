@@ -50,4 +50,12 @@ class Historian
   def getLength : Int
     File.read_lines(HISTORY_PATH).size
   end
+
+  def getPosition : Int
+    @@position
+  end
+
+  def resetPosition
+    @@position = -1
+  end
 end

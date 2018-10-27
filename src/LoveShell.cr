@@ -1,7 +1,7 @@
 require "fancyline"
 require "colorize"
 require "user_group"
-require "../src/prompt"
+require "./prompt"
 require "./historian"
 
 def get_command(ctx)
@@ -64,6 +64,10 @@ module LoveShell
   fancy.actions.set Fancyline::Key::Control::Up do |ctx|
     while true
       break if historian.getEntryUp[0..3] != "#<3#"
+      if historian.getLength == historian.getPosition + 1
+        historian.getEntryDown
+        break
+      end
     end
     ctx.editor.line = historian.getCurrentEntry
   end
@@ -80,6 +84,7 @@ module LoveShell
   begin
     while input = fancy.readline(prompt.prompt, rprompt: prompt.time)
       historian.log(input)
+      historian.resetPosition
       args = input.split(" ")
       break if input == "exit"
 

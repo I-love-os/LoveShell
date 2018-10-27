@@ -1,7 +1,7 @@
 require "fancyline"
 require "colorize"
 require "user_group"
-require "../src/prompt"
+require "./prompt"
 require "./historian"
 
 module LoveShell

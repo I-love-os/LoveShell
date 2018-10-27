@@ -2,8 +2,18 @@ require "colorize"
 require "user_group"
 
 class Prompt	
-	def prompt : String
-    "#{"[".colorize(:red)}\
+  def prompt : String
+    
+    prod_prefix = ""
+
+    if ENV.has_key? "PROD"
+      if ENV["PROD"].to_i == 1
+        prod_prefix = "(PROD) ".colorize.mode(:bold)
+      end
+    end
+
+    "#{prod_prefix}\
+    #{"[".colorize(:red)}\
     #{Process.user.colorize(:yellow)}\
     #{"@".colorize(:red)}\
     #{System.hostname.colorize(:yellow)}\

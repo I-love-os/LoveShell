@@ -38,6 +38,10 @@ module LoveShell
   fancy.actions.set Fancyline::Key::Control::Up do |ctx|
     while true
       break if historian.getEntryUp[0..3] != "#<3#"
+      if historian.getLength == historian.getPosition + 1
+        historian.getEntryDown
+        break
+      end
     end
     ctx.editor.line = historian.getCurrentEntry
   end

@@ -4,10 +4,10 @@ require "user_group"
 class Prompt	
   def prompt : String
     
-    prod_prefix = ""
+    dev_prefix = ""
 
-    if is_prod
-        prod_prefix = "(PROD) ".colorize.mode(:bold)
+    if is_dev?
+        prod_prefix = "(DEV) ".colorize.mode(:bold)
     end
 
     "#{prod_prefix}\
@@ -25,13 +25,13 @@ class Prompt
     "(#{time.hour}:#{time.minute}) ".colorize(:light_gray).mode(:bold).to_s
   end
 
-  def is_prod : Bool
-    prod = false
-    if ENV.has_key? "PROD"
-      if ENV["PROD"].to_i == 1
-        prod = true
+  def is_dev? : Bool
+    dev = false
+    if ENV.has_key? "DEV"
+      if ENV["DEV"].to_i == 1
+        dev = true
       end
     end
-    prod
+    dev
   end
 end

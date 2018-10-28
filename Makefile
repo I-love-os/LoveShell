@@ -16,10 +16,6 @@ build:
 
 .PHONY: install
 install: build
-ifeq (,$(wildcard /usr/bin/LoveShell))
 	sudo mv $(NAME) /usr/bin/$(NAME)
-else
-	sudo rm /usr/bin/$(NAME) && sudo mv $(NAME) /usr/bin/$(NAME)
-endif
 
 #RUN TESTS

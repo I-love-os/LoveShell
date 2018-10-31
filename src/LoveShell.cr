@@ -179,6 +179,9 @@ module LoveShell
         rescue exception
           puts exception
         end
+      elsif args[0] == "export"
+        ex = args[1].split "="
+        ENV[ex[0].to_s] = ex[1].to_s
       elsif args[0] == "alias"
         al = args[1].split "="
         args.delete args[0]

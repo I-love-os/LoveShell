@@ -21,6 +21,8 @@ module LoveShell
   execute_block = ""
   pause = false
 
+  aliases = {} of String => String
+
   prompt = Prompt.new
   fancy = Fancyline.new
   historian = Historian.new
@@ -173,6 +175,17 @@ module LoveShell
         rescue exception
           puts exception
         end
+      elsif args[0] == "alias"
+        al = args[1].split "="
+        args.delete args[0]
+        func = args.join(" ").gsub(al[0] + "=", "")
+        aliases[al[0]] = func[0] == '"' ? func.gsub '"', ("") : func[0] == '\'' ? func.gsub '\'', ("") : func
+      elsif args[0] == "unalias"
+        args.delete args[0]
+        aliases.reject! args
+      elsif aliases.has_key? args[0]
+        args[0] = aliases[args[0]]
+        system(args.join " ")
       else
         system(input)
       end

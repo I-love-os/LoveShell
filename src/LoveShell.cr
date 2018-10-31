@@ -1,6 +1,7 @@
 require "fancyline"
 require "colorize"
 require "user_group"
+require "option_parser"
 require "./prompt"
 require "./historian"
 
@@ -16,9 +17,34 @@ end
 module LoveShell
   VERSION = "0.1.0"
 
+  execute = false
+  execute_block = ""
+  pause = false
+
   prompt = Prompt.new
   fancy = Fancyline.new
   historian = Historian.new
+
+  OptionParser.parse! do |parser|
+    parser.banner = "Shell made with <3"
+    parser.on("-x BLOCK", "--execute BLOCK", "Executes the specified code block.") {|block| execute = true; execute_block = block}
+    parser.on("-p", "--pause", "(Usable only with -x) Shell doesn't exit after execution of the code block finishes.") {pause = true}
+    parser.on("-h", "--help", "Shows this help.") {puts parser; exit(0)}
+    parser.on("-v", "--version", "Prints LoveShell's version and exits.") {puts "LoveShell version #{VERSION}"; exit(0)}
+    parser.invalid_option do |flag|
+      STDERR.puts "ERROR: #{flag} is not a valid option."
+      STDERR.puts parser
+      exit(1)
+    end
+  end
+
+  if execute == true
+    system(execute_block)
+    unless pause == true
+      exit(0)
+    end
+  end
+
 
   fancy.display.add do |ctx, line, yielder|
     line = line.gsub(/^\w+/, &.colorize(:light_red).mode(:underline))

@@ -55,6 +55,54 @@ module LoveShell
     lines # Return the lines so far
   end
 
+  fancy.autocomplete.add do |ctx, range, word, yielder|
+    completions = yielder.call(ctx, range, word)
+    prev_char = ctx.editor.line[ctx.editor.cursor - 1]?
+
+      # if command = get_command(ctx)
+      #   cmd_begin = ctx.editor.line.rindex(command, ctx.editor.line.size - command.size)
+      #   cmd_end = cmd_begin + command.size if cmd_begin
+      # end
+
+      arg_begin = ctx.editor.line.rindex(' ', ctx.editor.cursor - 1) || 0
+      arg_end = ctx.editor.line.index(' ', arg_begin + 1) || ctx.editor.line.size
+      range = (arg_begin + 1)...arg_end
+      # lines = ctx.editor.line.split
+
+      # arg_begin = ctx.editor.line.rindex(lines.last, ctx.editor.line.size - lines.last.size)
+      # arg_end = arg_begin + lines.last.size if arg_begin
+
+      
+
+      # if arg_end && arg_begin
+      # puts "xD" + ctx.editor.line[arg_begin...arg_end].strip
+      #   if get_command(ctx) == ctx.editor.line[range].strip
+      #     is_dir = false
+      #   else
+      #     is_dir = true
+      #   end
+      #   puts is_dir
+      # end
+      # range2 = (cmd_begin || 0)..(cmd_end || 0)
+
+      # puts ctx.editor.line.rindex(' ', ctx.editor.cursor - 1)
+    if (get_command(ctx) != ctx.editor.line[arg_begin...arg_end].strip) && ctx.editor.line[arg_begin...arg_end] != "" || { '/', '.' }.includes?(prev_char)
+      path = ctx.editor.line[range].strip
+    end
+
+  
+    if path
+      path = path.sub("~", "/home/#{Process.user}")
+      Dir["#{path}*"].each do |suggestion|
+        base = File.basename(suggestion)
+        suggestion += '/' if Dir.exists? suggestion
+        completions << Fancyline::Completion.new(range, suggestion.sub("/home/#{Process.user}", "~"), base)
+      end
+    end
+  
+    completions
+  end
+
   #fancy.actions.set Fancyline::Key::Control::AltH do |ctx|
   #  if command = get_command(ctx)
   #    system("man #{command}")

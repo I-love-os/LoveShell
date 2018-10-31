@@ -4,6 +4,7 @@ require "user_group"
 require "option_parser"
 require "./prompt"
 require "./historian"
+require "io"
 
 def get_command(ctx)
   line = ctx.editor.line
@@ -104,16 +105,16 @@ module LoveShell
       Dir["#{path}*"].each do |suggestion|
         base = File.basename(suggestion)
         suggestion += '/' if Dir.exists? suggestion
-        # completions << Fancyline::Completion.new(range, suggestion, base)
-        completions << Fancyline::Completion.new(range, suggestion.sub("/home/#{Process.user}", "~"), base)
+        completions << Fancyline::Completion.new(range, suggestion.sub("/home/#{Process.user}", "~"), "")
       end
     end
     commands = ["xd", "xx"]
 
     if command
-      commands = `compgen -c | grep '^#{commands}\w*' 2> /dev/null`.lines
+      cmd = "compgen -c | grep '^#{command}\w*' 2> /dev/null"
+      commands = `#{cmd}`.lines
       commands.uniq.each do |suggestion|
-        completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], suggestion)
+        completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], "")
       end
     end
 

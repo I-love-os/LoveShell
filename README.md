@@ -4,15 +4,24 @@ Customizable shell made with :heart:
 
 ## Installation
 
-TODO: Write installation instructions here
+`make install` - if you are lazy
+
+if not then
+
+```
+crystal build --release src/LoveShell.cr
+sudo mv LoveShell /usr/bin
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+It's a freaking shell! You juest run it!
+
+Use: `LoveShell`!!
 
 ## Development
 
-TODO: Write development instructions here
+LOL IDK
 
 ## Contributing
 

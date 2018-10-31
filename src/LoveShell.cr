@@ -21,7 +21,7 @@ module LoveShell
   execute_block = ""
   pause = false
 
-  aliases = {} of String => String
+  aliases = { "ls" => "ls --color=auto", "grep" => "grep --color"} of String => String
 
   prompt = Prompt.new
   fancy = Fancyline.new
@@ -91,14 +91,14 @@ module LoveShell
     arg_begin = ctx.editor.line.rindex(' ', ctx.editor.cursor - 1) || 0
     arg_end = ctx.editor.line.index(' ', arg_begin + 1) || ctx.editor.line.size
     range = (arg_begin + 1)...arg_end
-  
+
     if (get_command(ctx) != ctx.editor.line[arg_begin...arg_end].strip) && ctx.editor.line[arg_begin...arg_end] != "" || { '/', '.' }.includes?(prev_char)
       path = ctx.editor.line[range].strip
     elsif ctx.editor.line[arg_begin...arg_end] != ""
       command = ctx.editor.line[arg_begin...arg_end].strip
     end
 
-  
+
     if path
       path = path.sub("~", "/home/#{Process.user}")
       Dir["#{path}*"].each do |suggestion|
@@ -116,7 +116,7 @@ module LoveShell
         completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], suggestion)
       end
     end
-  
+
     completions
   end
 
@@ -169,6 +169,9 @@ module LoveShell
       args = input.split(" ")
       break if input == "exit"
 
+      als = [] of Int32
+      args.each_index { |x| als << x if aliases.has_key? args[x] }
+
       if args[0] == "cd"
         begin
           Dir.cd(args[1].sub("~", "/home/#{Process.user}"))
@@ -183,8 +186,8 @@ module LoveShell
       elsif args[0] == "unalias"
         args.delete args[0]
         aliases.reject! args
-      elsif aliases.has_key? args[0]
-        args[0] = aliases[args[0]]
+      elsif !als.empty?
+        als.each { |x| args[x] = aliases[args[x]] }
         system(args.join " ")
       else
         system(input)

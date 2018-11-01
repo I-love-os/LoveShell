@@ -4,6 +4,7 @@ require "user_group"
 require "option_parser"
 require "./prompt"
 require "./historian"
+require "./commands"
 require "io"
 
 def get_command(ctx)
@@ -27,6 +28,7 @@ module LoveShell
   prompt = Prompt.new
   fancy = Fancyline.new
   historian = Historian.new
+  commands = Commands.new
 
   OptionParser.parse! do |parser|
     parser.banner = "Shell made with <3"
@@ -108,12 +110,9 @@ module LoveShell
         completions << Fancyline::Completion.new(range, suggestion.sub("/home/#{Process.user}", "~"), "")
       end
     end
-    commands = ["xd", "xx"]
 
     if command
-      cmd = "compgen -c | grep '^#{command}\w*' 2> /dev/null"
-      commands = `#{cmd}`.lines
-      commands.uniq.each do |suggestion|
+      commands.grepCommands(command).uniq.each do |suggestion|
         completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], "")
       end
     end

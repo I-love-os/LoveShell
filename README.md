@@ -15,7 +15,7 @@ sudo mv LoveShell /usr/bin
 
 ## Usage
 
-It's a freaking shell! You juest run it!
+It's a freaking shell! You just run it!
 
 Use: `LoveShell`!!
 

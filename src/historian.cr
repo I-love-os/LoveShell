@@ -12,17 +12,6 @@ class Historian
     end
   end
 
-  #def getEntryUp : String
-  #  histLength = File.read_lines(HISTORY_PATH).size - 1
-  #  histLog = File.read_lines(HISTORY_PATH).reverse
-  #  @@position += 1
-  #  if @@position > histLength
-  #    @@position = histLength
-  #  end
-  #  out = histLog[@@position].to_s
-  #  out
-  #end
-
   def getEntryUp : String
     histLength = File.read_lines(HISTORY_PATH).size - 1
     histLog = File.read_lines(HISTORY_PATH).reverse
@@ -52,25 +41,25 @@ class Historian
 
   def getEntryDown : String
     histLog = File.read_lines(HISTORY_PATH).reverse
-    unless @@savedLine == ""                                    #Jeśli mam coś zapisane
+    unless @@savedLine == ""
       while true
-        @@position -= 1                                         #Pozycja się zmniejsza
-        if @@position < 0                                       #Jeśli jest < 0
-          @@position = -1                                       #Upewniam się że zostanie na -1
-          out = @@savedLine                                     #Upewniam się że w prompcie będę miał to co zapisałem
-          break                                                 #I wychodzę z pętli
+        @@position -= 1
+        if @@position < 0
+          @@position = -1
+          out = @@savedLine
+          break
         end
-        out = histLog[@@position].to_s                          #Inaczej biorę to co mam na danej pozycji
-        break if out[0..@@savedLine.size - 1] == @@savedLine    #Sprawdzam czy pasuje do tego co szukam
+        out = histLog[@@position].to_s
+        break if out[0..@@savedLine.size - 1] == @@savedLine
       end
-      out                                                       #Returnuję wpis
-    else                                                        #Inaczej
+      out
+    else
       while true
-        @@position -= 1                                         #Pozycja się zmniejsza
-        if @@position < 0                                       #Jeśli jest < 0
-          @@position = -1                                       #Upewniam się że zostanie na -1
-          out = ""                                              #Upewniam się że prompt będzie pusty
-          break                                                 #Wychodzę z pętli
+        @@position -= 1
+        if @@position < 0
+          @@position = -1
+          out = ""
+          break
         end
         out = histLog[@@position].to_s
         break if out[0..3] != "#<3#"

@@ -10,7 +10,7 @@ targets:
 
 dependencies:
   fancyline:
-    github: Papierkorb/fancyline    
+    github: I-love-os/fancylove  
   user_group:
     github: chris-huxtable/user_group.cr  
 

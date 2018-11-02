@@ -107,13 +107,13 @@ module LoveShell
       Dir["#{path}*"].each do |suggestion|
         base = File.basename(suggestion)
         suggestion += '/' if Dir.exists? suggestion
-        completions << Fancyline::Completion.new(range, suggestion.sub("/home/#{Process.user}", "~"), "")
+        completions << Fancyline::Completion.new(range, suggestion.sub("/home/#{Process.user}", "~"), base)
       end
     end
 
     if command
       commands.grepCommands(command).uniq.each do |suggestion|
-        completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], "")
+        completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], suggestion)
       end
     end
 

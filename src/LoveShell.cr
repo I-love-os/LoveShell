@@ -23,12 +23,16 @@ module LoveShell
   execute_block = ""
   pause = false
 
-  aliases = { "ls" => "ls --color=auto", "grep" => "grep --color"} of String => String
+  aliases = { "ls" => "ls --color=auto", "lsa" => "ls --color=auto -a", "grep" => "grep --color"} of String => String
 
   prompt = Prompt.new
   fancy = Fancyline.new
   historian = Historian.new
   commands = Commands.new
+
+
+  #ARGUMENT PARSING
+
 
   OptionParser.parse! do |parser|
     parser.banner = "Shell made with <3"
@@ -51,6 +55,9 @@ module LoveShell
   end
 
 
+  #COLORING INPUT
+
+
   fancy.display.add do |ctx, line, yielder|
     line = line.gsub(/^\w+/, &.colorize(:light_red).mode(:bold))
     line = line.gsub(/(\|\s*)(\w+)/) do
@@ -62,6 +69,9 @@ module LoveShell
 
     yielder.call ctx, line
   end
+
+
+  #HELP LINE
 
 
   help_line_enabled = true
@@ -85,6 +95,10 @@ module LoveShell
     end
     lines # Return the lines so far
   end
+
+
+  #AUTOCOMPLETION
+
 
   fancy.autocomplete.add do |ctx, range, word, yielder|
     completions = yielder.call(ctx, range, word)
@@ -120,6 +134,10 @@ module LoveShell
     completions
   end
 
+
+  #MISC KEYBINDS
+
+
   #fancy.actions.set Fancyline::Key::Control::AltH do |ctx|
   #  if command = get_command(ctx)
   #    system("man #{command}")
@@ -142,25 +160,28 @@ module LoveShell
     #Do Nothing
   end
 
+  fancy.actions.set Fancyline::Key::Control::CtrlR do |ctx|
+    #No default history search for you
+  end
+
+
+  #HISTORY CONTROL
+
+
   fancy.actions.set Fancyline::Key::Control::Up do |ctx|
-    while true
-      break if historian.getEntryUp[0..3] != "#<3#"
-      if historian.getLength == historian.getPosition + 1
-        historian.getEntryDown
-        break
-      end
-    end
-    ctx.editor.line = historian.getCurrentEntry
+    historian.saveLine(ctx.editor.line) if historian.getPosition == -1
+    ctx.editor.line = historian.getEntryUp
     ctx.editor.move_cursor(ctx.editor.line.size)
   end
 
   fancy.actions.set Fancyline::Key::Control::Down do |ctx|
-    while true
-      break if historian.getEntryDown[0..3] != "#<3#"
-    end
-    ctx.editor.line = historian.getCurrentEntry
+    ctx.editor.line = historian.getEntryDown
     ctx.editor.move_cursor(ctx.editor.line.size)
   end
+
+
+  #THE MAIN LOOP
+
 
   historian.log(%(#<3# Opened LoveShell instance with PID ) + "#{Process.pid}" + " on " + "#{Time.now}")
 

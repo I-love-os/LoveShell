@@ -52,13 +52,13 @@ module LoveShell
 
 
   fancy.display.add do |ctx, line, yielder|
-    line = line.gsub(/^\w+/, &.colorize(:light_red).mode(:underline))
+    line = line.gsub(/^\w+/, &.colorize(:light_red).mode(:bold))
     line = line.gsub(/(\|\s*)(\w+)/) do
-      "#{$1}#{$2.colorize(:light_red).mode(:underline)}"
+      "#{$1}#{$2.colorize(:light_red).mode(:bold)}"
     end
 
     line = line.gsub(/ --?\w+/, &.colorize(:magenta))
-    line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(:cyan))
+    line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(:cyan).mode(:underline))
 
     yielder.call ctx, line
   end

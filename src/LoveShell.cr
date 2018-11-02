@@ -17,7 +17,7 @@ def get_command(ctx)
 end
 
 module LoveShell
-  VERSION = "0.1.0"
+  VERSION = "0.2.0"
 
   execute = false
   execute_block = ""

@@ -2,12 +2,12 @@ require "colorize"
 require "user_group"
 
 class Prompt
-  def prompt : String
+  def lovePrompt : String
 
     dev_prefix = ""
 
     if is_dev?
-        prod_prefix = "(DEV) ".colorize.mode(:bold)
+        prod_prefix = "(DEV) ".colorize.mode(:blink)
     end
 
     "#{prod_prefix}\
@@ -17,6 +17,21 @@ class Prompt
     #{System.hostname.colorize(:yellow)}\
     #{"] ".colorize(:red)}\
     #{Dir.current.sub("/home/#{Process.user}", "~").colorize.mode(:bold)}\
+    #{" ->".colorize(:light_red)} ".to_s
+  end
+
+  def wizardPrompt : String
+
+    dev_prefix = ""
+
+    if is_dev?
+        prod_prefix = "(DEV) ".colorize.mode(:blink)
+    end
+
+    "#{prod_prefix}\
+    #{"[".colorize(:red)}\
+    #{"LOVESHELL SETTINGS".colorize(:magenta)}\
+    #{"]".colorize(:red)}\
     #{" ->".colorize(:light_red)} ".to_s
   end
 

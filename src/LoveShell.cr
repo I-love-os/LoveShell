@@ -5,6 +5,7 @@ require "option_parser"
 require "./prompt"
 require "./historian"
 require "./commands"
+require "./wizard"
 require "io"
 
 def get_command(ctx)
@@ -29,6 +30,7 @@ module LoveShell
   fancy = Fancyline.new
   historian = Historian.new
   commands = Commands.new
+  wizard = Wizard.new
 
 
   #ARGUMENT PARSING
@@ -186,7 +188,7 @@ module LoveShell
   historian.log(%(#<3# Opened LoveShell instance with PID ) + "#{Process.pid}" + " on " + "#{Time.now}")
 
   begin
-    while input = fancy.readline(prompt.prompt, rprompt: prompt.time)
+    while input = fancy.readline(prompt.lovePrompt, rprompt: prompt.time)
       historian.log(input)
       historian.resetPosition
       args = input.split(" ")
@@ -215,6 +217,8 @@ module LoveShell
       elsif !als.empty?
         als.each { |x| args[x] = aliases[args[x]] }
         system(args.join " ")
+      elsif args[0] == "SETTINGS" || args[0] == "CONFIG" || args[0] == "WIZARD"
+        wizard.start
       else
         system(input)
       end

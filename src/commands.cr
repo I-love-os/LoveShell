@@ -4,6 +4,7 @@ class Commands
 
   def initialize
     @@paths.each do |path|
+      next if !Dir.exists? path
       dir = Dir.new path
       dir.each do |file|
         @@commands << file if File.file? path + '/' + file

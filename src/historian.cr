@@ -2,6 +2,7 @@ class Historian
 
   HISTORY_PATH = "/home/#{Process.user}/.hist.love"
   @@position = -1
+  @@savedLine = ""
 
   def log(message : String)
     if message != ""
@@ -11,30 +12,71 @@ class Historian
     end
   end
 
+  #def getEntryUp : String
+  #  histLength = File.read_lines(HISTORY_PATH).size - 1
+  #  histLog = File.read_lines(HISTORY_PATH).reverse
+  #  @@position += 1
+  #  if @@position > histLength
+  #    @@position = histLength
+  #  end
+  #  out = histLog[@@position].to_s
+  #  out
+  #end
+
   def getEntryUp : String
     histLength = File.read_lines(HISTORY_PATH).size - 1
     histLog = File.read_lines(HISTORY_PATH).reverse
-    @@position += 1
-    if @@position > histLength
-      @@position = histLength
+    unless @@savedLine == ""
+      while true
+        @@position += 1
+        out = histLog[@@position].to_s
+        break if out[0..@@savedLine.size - 1] == @@savedLine
+        if getLength == getPosition + 1
+          @@position -= 1
+          break
+        end
+      end
+    else
+      while true
+        @@position += 1
+        out = histLog[@@position].to_s
+        break if out[0..3] != "#<3#"
+        if getLength == getPosition + 1
+          @@position -= 1
+          break
+        end
+      end
     end
-    out = histLog[@@position].to_s
     out
   end
 
   def getEntryDown : String
-    @@position -= 1
-    if @@position < 0
-      @@position = -1
+    histLog = File.read_lines(HISTORY_PATH).reverse
+    unless @@savedLine == ""                                    #Jeśli mam coś zapisane
+      while true
+        @@position -= 1                                         #Pozycja się zmniejsza
+        if @@position < 0                                       #Jeśli jest < 0
+          @@position = -1                                       #Upewniam się że zostanie na -1
+          out = @@savedLine                                     #Upewniam się że w prompcie będę miał to co zapisałem
+          break                                                 #I wychodzę z pętli
+        end
+        out = histLog[@@position].to_s                          #Inaczej biorę to co mam na danej pozycji
+        break if out[0..@@savedLine.size - 1] == @@savedLine    #Sprawdzam czy pasuje do tego co szukam
+      end
+      out                                                       #Returnuję wpis
+    else                                                        #Inaczej
+      while true
+        @@position -= 1                                         #Pozycja się zmniejsza
+        if @@position < 0                                       #Jeśli jest < 0
+          @@position = -1                                       #Upewniam się że zostanie na -1
+          out = ""                                              #Upewniam się że prompt będzie pusty
+          break                                                 #Wychodzę z pętli
+        end
+        out = histLog[@@position].to_s
+        break if out[0..3] != "#<3#"
+      end
+      out
     end
-
-    if @@position == -1
-      out = ""
-    else
-      histLog = File.read_lines(HISTORY_PATH).reverse
-      out = histLog[@@position].to_s
-    end
-    out
   end
 
   def getCurrentEntry : String
@@ -44,7 +86,7 @@ class Historian
       histLog = File.read_lines(HISTORY_PATH).reverse
       out = histLog[@@position].to_s
     end
-    out  
+    out
   end
 
   def getLength : Int
@@ -57,5 +99,17 @@ class Historian
 
   def resetPosition
     @@position = -1
+  end
+
+  def saveLine(line : String)
+    @@savedLine = line
+  end
+
+  def loadLine : String
+    @@savedLine
+  end
+
+  def clearSavedLine
+    @@savedLine = ""
   end
 end

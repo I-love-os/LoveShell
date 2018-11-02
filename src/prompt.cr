@@ -22,11 +22,8 @@ class Prompt
 
   def time : String
     time = Time.now
-		unless time.minute < 10
-    	"(#{time.hour}:#{time.minute}) ".colorize(:light_gray).mode(:bold).to_s
-		else
-			"(#{time.hour}:0#{time.minute}) ".colorize(:light_gray).mode(:bold).to_s
-		end
+    "(#{time.hour < 10 ? "0" + time.hour.to_s : time.hour}:#{time.minute < 10 ? "0" + time.minute.to_s : time.minute}) "
+    .colorize(:light_gray).mode(:bold).to_s
   end
 
   def is_dev? : Bool

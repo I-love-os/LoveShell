@@ -151,6 +151,7 @@ module LoveShell
       end
     end
     ctx.editor.line = historian.getCurrentEntry
+    ctx.editor.move_cursor(ctx.editor.line.size)
   end
 
   fancy.actions.set Fancyline::Key::Control::Down do |ctx|
@@ -158,6 +159,7 @@ module LoveShell
       break if historian.getEntryDown[0..3] != "#<3#"
     end
     ctx.editor.line = historian.getCurrentEntry
+    ctx.editor.move_cursor(ctx.editor.line.size)
   end
 
   historian.log(%(#<3# Opened LoveShell instance with PID ) + "#{Process.pid}" + " on " + "#{Time.now}")

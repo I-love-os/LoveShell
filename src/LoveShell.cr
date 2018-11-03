@@ -61,12 +61,12 @@ module LoveShell
 
 
   fancy.display.add do |ctx, line, yielder|
-    line = line.gsub(/^\w+/, &.colorize(:light_red).mode(:bold))
-    line = line.gsub(/(\|\s*)(\w+)/) do
+    line = line.gsub(/^[A-Za-z0-9-]*/, &.colorize(:light_red).mode(:bold))
+    line = line.gsub(/(\|\s*)([A-Za-z0-9-]*)/) do
       "#{$1}#{$2.colorize(:light_red).mode(:bold)}"
     end
 
-    line = line.gsub(/ --?\w+/, &.colorize(:magenta))
+    line = line.gsub(/ --?[A-Za-z0-9-]*/, &.colorize(:magenta))
     line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(:cyan).mode(:underline))
 
     yielder.call ctx, line

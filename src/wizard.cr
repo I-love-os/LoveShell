@@ -1,12 +1,12 @@
 require "fancyline"
 require "./prompt"
-require "./config"
+require "./config_manager"
 
 class Wizard
 
   @fancy = Fancyline.new
   @prompt = Prompt.new
-  @config = Config.new
+  @config = ConfigManager.new
 
   def start
     @config.initConfig

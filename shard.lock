@@ -1,12 +1,16 @@
 version: 1.0
 shards:
+  config:
+    github: chris-huxtable/config.cr
+    version: 0.1.5
+
   cute:
     github: Papierkorb/cute
     version: 0.3.1
 
   fancyline:
-    github: Papierkorb/fancyline
-    version: 0.3.0
+    github: I-love-os/fancylove
+    version: 0.3.1
 
   user_group:
     github: chris-huxtable/user_group.cr

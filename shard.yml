@@ -13,6 +13,8 @@ dependencies:
     github: I-love-os/fancylove  
   user_group:
     github: chris-huxtable/user_group.cr  
+  config:
+    github: chris-huxtable/config.cr
 
 crystal: 0.26.1
 

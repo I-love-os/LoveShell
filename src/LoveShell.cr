@@ -219,15 +219,15 @@ module LoveShell
         system(args.join " ")
       elsif args[0] == "SETTINGS" || args[0] == "CONFIG" || args[0] == "WIZARD"
         wizard.start
-      elsif !system("#{input} 2> /dev/null")
-        puts "LoveShell".colorize(:magenta).to_s +
-        ":".colorize.mode(:bold).to_s +
-        " Command ".colorize(:yellow).to_s +
-        %(").colorize.mode(:bold).to_s +
-        input.colorize(:red).mode(:bold).to_s +
-        %(" ).colorize.mode(:bold).to_s +
-        "not found".colorize(:yellow).to_s +
-        "!".colorize(:red).to_s
+      # elsif !system("#{input} 2> /dev/null")
+      #   puts "LoveShell".colorize(:magenta).to_s +
+      #   ":".colorize.mode(:bold).to_s +
+      #   " Command ".colorize(:yellow).to_s +
+      #   %(").colorize.mode(:bold).to_s +
+      #   input.colorize(:red).mode(:bold).to_s +
+      #   %(" ).colorize.mode(:bold).to_s +
+      #   "not found".colorize(:yellow).to_s +
+      #   "!".colorize(:red).to_s
       else
         system(input)
       end

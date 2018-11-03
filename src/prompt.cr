@@ -8,11 +8,11 @@ class Prompt
     git_suffix = ""
 
     if Dir.exists? Dir.current + "/.git"
-      if File.exists? Dir.current + "/.git/config"
-        git_config = File.read_lines(Dir.current + "/.git/config")
+      if File.exists? Dir.current + "/.git/HEAD"
+        git_config = File.read_lines(Dir.current + "/.git/HEAD")
         git_config.each do |line|
-          if /^\[branch/.match(line)
-            git_suffix = " (#{line.split('"')[1]})".colorize(:blue).to_s
+          if /^ref:/.match(line)
+            git_suffix = " (#{line.split('/').last?})".colorize(:blue).to_s
           end
         end
       end

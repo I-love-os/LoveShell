@@ -3,6 +3,10 @@ class Commands
   @@commands = [] of String
 
   def initialize
+    getCommands
+  end
+
+  def getCommands : Array(String)
     @@paths.each do |path|
       next if !Dir.exists? path
       dir = Dir.new path
@@ -10,6 +14,7 @@ class Commands
         @@commands << file if File.file? path + '/' + file
       end
     end
+    @@commands
   end
 
   def grepCommands(input : String) : Array(String)
@@ -20,5 +25,15 @@ class Commands
       end
     end
     grepd_commands
+  end
+
+  def exists?(command) : Bool
+    cmd_exists = false
+    getCommands.each do |cmd|
+      if command == cmd
+         cmd_exists = true
+       end
+    end
+    cmd_exists
   end
 end

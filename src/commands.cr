@@ -28,12 +28,20 @@ class Commands
   end
 
   def exists?(command) : Bool
-    cmd_exists = false
-    getCommands.each do |cmd|
-      if command == cmd
-         cmd_exists = true
-       end
+    if !command.empty?
+      cmd_exists = false
+      getCommands.each do |cmd|
+        if command == cmd
+           cmd_exists = true
+         end
+      end
+      if !{'.', '/'}.includes? command
+        cmd_exists = true
+      end
+    else
+      cmd_exists = true
     end
+
     cmd_exists
   end
 end

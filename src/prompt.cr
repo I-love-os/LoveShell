@@ -4,7 +4,21 @@ require "./config_manager"
 
 class Prompt
 
-  @config = ConfigManager.new
+  @@config = ConfigManager.new
+
+  GIT_STATUS = @@config.getProperty("git_status")
+  POWERLINE = @@config.getProperty("powerline")
+  CLOCK = @@config.getProperty("clock")
+  @git_dir = false
+
+  def gitCheck
+    if File.exists? Dir.current + "/.git/HEAD"
+      @git_dir = true
+    else
+      @git_dir = false
+    end
+  end
+
 
   def git : String
     out = ""
@@ -13,11 +27,27 @@ class Prompt
         git_config = File.read_lines(Dir.current + "/.git/HEAD")
         git_config.each do |line|
           if /^ref:/.match(line)
-            if @config.getProperty("powerline") == "on"
-              out = "\u{e0a0}#{line.split('/').last?}".colorize.fore(:black).back(:green).to_s
+            @git_dir = true
+            if POWERLINE == "on"
+              case GIT_STATUS
+              when "left"
+                out = "#{"\u{e0a0}".colorize.fore(:black).back(:green)}\
+                #{line.split('/').last?.colorize.fore(:black).back(:green)}\
+                #{"\u{e0b0}".colorize(:green)}".to_s
+              when "right"
+                out = "#{"\u{e0b2}".colorize(:green)}#{"\u{e0a0}".colorize.fore(:black).back(:green)}\
+                #{line.split('/').last?.colorize.fore(:black).back(:green)}\
+                #{"\u{e0b0}".colorize(:green)}".to_s
+              when "off"
+                out = ""
+              else
+                out = "git_status: wrong config value (#{GIT_STATUS})".colorize(:red).mode(:bold).to_s
+              end
             else
               out = "(#{line.split('/').last?})".colorize(:blue).to_s
             end
+          else
+            @git_dir = false
           end
         end
       end
@@ -35,7 +65,8 @@ class Prompt
         prod_prefix = "(DEV) ".colorize.mode(:blink)
     end
 
-    if @config.getProperty("powerline") == "on"
+    if POWERLINE == "on"
+      gitCheck
       out = "#{prod_prefix}\
       #{"\u{e0b2}".colorize.fore(:red)}\
       #{Process.user.colorize.fore(:black).back(:red)}\
@@ -43,9 +74,8 @@ class Prompt
       #{System.hostname.colorize.fore(:black).back(:red)}\
       #{"\u{e0b0}".colorize.fore(:red).back(:yellow)}\
       #{Dir.current.sub("/home/#{Process.user}", "~").colorize.fore(:black).back(:yellow)}\
-      #{@config.getProperty("git_status") == "left" ? "\u{e0b0}".colorize.fore(:yellow).back(:green) : "\u{e0b0}".colorize(:yellow)}\
-      #{@config.getProperty("git_status") == "left" ? "#{git}" : ""}\
-      #{@config.getProperty("git_status") == "left" ? "\u{e0b0}".colorize(:green) : ""}\
+      #{GIT_STATUS == "left" && @git_dir == true ? "\u{e0b0}".colorize.fore(:yellow).back(:green) : "\u{e0b0}".colorize(:yellow)}\
+      #{GIT_STATUS == "left" ? "#{git}" : ""}\
       #{"\u{e0b1}".colorize(:light_red)} ".to_s
     else
       out = "#{prod_prefix}\
@@ -55,7 +85,7 @@ class Prompt
       #{System.hostname.colorize(:yellow)}\
       #{"] ".colorize(:red)}\
       #{Dir.current.sub("/home/#{Process.user}", "~").colorize.mode(:bold)}\
-      #{@config.getProperty("git_status") == "left" ? " ``#{git}" : ""}\
+      #{GIT_STATUS == "left" ? " #{git}" : ""}\
       #{" ->".colorize(:light_red)} ".to_s
     end
     out
@@ -77,9 +107,7 @@ class Prompt
   end
 
   def right : String
-    "#{@config.getProperty("git_status") == "right" ? "\u{e0b2}".colorize(:green) : ""}\
-    #{@config.getProperty("git_status") == "right" ? git : ""}\
-    #{@config.getProperty("git_status") == "right" ? "\u{e0b0}".colorize(:green) : ""} #{time}"
+    "#{GIT_STATUS == "right" ? git : ""} #{time}"
   end
 
   def time : String
@@ -87,20 +115,20 @@ class Prompt
     ampmhour = 12
     ampm = ""
     time = Time.now
-    if @config.getProperty("clock") == "24h"
+    if CLOCK == "24h"
       #That's the normal time format you scrubs.
-    elsif @config.getProperty("clock") == "12h"
+    elsif CLOCK == "12h"
       ampmhour = time.hour % 12 if time.hour != 12 || time.hour != 24
       time.hour < 12 ? {ampm = "AM"} : {ampm = "PM"}
     end
 
-    unless @config.getProperty("clock") == "off"
-      @config.getProperty("clock") == "12h" ? {hours = ampmhour} : {hours = time.hour}
-      if @config.getProperty("powerline") == "on"
-        out = "\u{f017}#{hours < 10 ? "0" + hours.to_s : hours}:#{time.minute < 10 ? "0" + time.minute.to_s : time.minute}#{@config.getProperty("clock") == "12h" ? " #{ampm}" : ""} "
+    unless CLOCK == "off"
+      CLOCK == "12h" ? {hours = ampmhour} : {hours = time.hour}
+      if POWERLINE == "on"
+        out = "\u{f017}#{hours < 10 ? "0" + hours.to_s : hours}:#{time.minute < 10 ? "0" + time.minute.to_s : time.minute}#{CLOCK == "12h" ? " #{ampm}" : ""} "
         .colorize(:light_gray).mode(:bold).to_s
       else
-        out = "(#{hours < 10 ? "0" + hours.to_s : hours}:#{time.minute < 10 ? "0" + time.minute.to_s : time.minute}#{@config.getProperty("clock") == "12h" ? " #{ampm}" : ""}) "
+        out = "(#{hours < 10 ? "0" + hours.to_s : hours}:#{time.minute < 10 ? "0" + time.minute.to_s : time.minute}#{CLOCK == "12h" ? " #{ampm}" : ""}) "
         .colorize(:light_gray).mode(:bold).to_s
       end
     else

@@ -23,6 +23,7 @@ module LoveShell
   execute = false
   execute_block = ""
   pause = false
+  settings = false
 
   aliases = { "ls" => "ls --color=auto", "lsa" => "ls --color=auto -a", "grep" => "grep --color"} of String => String
 
@@ -39,7 +40,8 @@ module LoveShell
   OptionParser.parse! do |parser|
     parser.banner = "Shell made with <3"
     parser.on("-x BLOCK", "--execute BLOCK", "Executes the specified code block.") {|block| execute = true; execute_block = block}
-    parser.on("-p", "--pause", "(Usable only with -x) Shell doesn't exit after execution of the code block finishes.") {pause = true}
+    parser.on("-s", "--settings", "Launches the LoveShell Settings prompt.") {settings = true}
+    parser.on("-p", "--pause", "(Usable with -x or -s) Shell doesn't exit after execution of the task finishes.") {pause = true}
     parser.on("-h", "--help", "Shows this help.") {puts parser; exit(0)}
     parser.on("-v", "--version", "Prints LoveShell's version and exits.") {puts "LoveShell version #{VERSION}"; exit(0)}
     parser.invalid_option do |flag|
@@ -51,6 +53,13 @@ module LoveShell
 
   if execute == true
     system(execute_block)
+    unless pause == true
+      exit(0)
+    end
+  end
+
+  if settings == true
+    wizard.start
     unless pause == true
       exit(0)
     end
@@ -188,7 +197,7 @@ module LoveShell
   historian.log(%(#<3# Opened LoveShell instance with PID ) + "#{Process.pid}" + " on " + "#{Time.now}")
 
   begin
-    while input = fancy.readline(prompt.lovePrompt, rprompt: prompt.time)
+    while input = fancy.readline(prompt.lovePrompt, rprompt: prompt.right)
       historian.log(input)
       historian.resetPosition
       args = input.split(" ")

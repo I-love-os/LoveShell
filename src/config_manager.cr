@@ -48,6 +48,12 @@ class ConfigManager
 
     powerline: "on",
 
+    # Floating prompt - (usable only with Powerline ON)
+    # Is the float supposed to appear floating, or connected to the left side of the terminal.
+    # Available values are "off", or "on".
+
+    floating_prompt = "off",
+
     # Git Status - Shows the current Git branch if your current workinng directory is a Git repository.
     # If you're not a developer don't worry about this option.
     # Available values are "left", "right", or "off".
@@ -84,7 +90,11 @@ class ConfigManager
   end
 
   def getProperty(key : String) : String
-    @@config.as_s(key)
+    begin
+      @@config.as_s(key)
+    rescue
+      "key not found xd"
+    end
   end
 
   def getProperty(key : Nil) : String

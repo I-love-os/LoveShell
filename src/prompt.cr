@@ -8,6 +8,7 @@ class Prompt
 
   GIT_STATUS = @@config.getProperty("git_status")
   POWERLINE = @@config.getProperty("powerline")
+  FLOATING_PROMPT = @@config.getProperty("floating_prompt")
   CLOCK = @@config.getProperty("clock")
   @git_dir = false
 
@@ -68,7 +69,7 @@ class Prompt
     if POWERLINE == "on"
       gitCheck
       out = "#{prod_prefix}\
-      #{"\u{e0b2}".colorize.fore(:red)}\
+      #{FLOATING_PROMPT == "on" ? "\u{e0b2}".colorize(:red) : "\u{2588}".colorize(:red)}\
       #{Process.user.colorize.fore(:black).back(:red)}\
       #{"@".colorize.fore(:black).back(:red)}\
       #{System.hostname.colorize.fore(:black).back(:red)}\

@@ -25,7 +25,7 @@ module LoveShell
   pause = false
   settings = false
 
-  aliases = { "ls" => "ls --color=auto", "lsa" => "ls --color=auto -a", "grep" => "grep --color"} of String => String
+  aliases = {"ls" => "ls --color=auto", "lsa" => "ls --color=auto -a", "grep" => "grep --color"} of String => String
 
   prompt = Prompt.new
   fancy = Fancyline.new
@@ -33,17 +33,15 @@ module LoveShell
   commands = Commands.new
   wizard = Wizard.new
 
-
-  #ARGUMENT PARSING
-
+  # ARGUMENT PARSING
 
   OptionParser.parse! do |parser|
     parser.banner = "Shell made with <3"
-    parser.on("-x BLOCK", "--execute BLOCK", "Executes the specified code block.") {|block| execute = true; execute_block = block}
-    parser.on("-s", "--settings", "Launches the LoveShell Settings prompt.") {settings = true}
-    parser.on("-p", "--pause", "(Usable with -x or -s) Shell doesn't exit after execution of the task finishes.") {pause = true}
-    parser.on("-h", "--help", "Shows this help.") {puts parser; exit(0)}
-    parser.on("-v", "--version", "Prints LoveShell's version and exits.") {puts "LoveShell version #{VERSION}"; exit(0)}
+    parser.on("-x BLOCK", "--execute BLOCK", "Executes the specified code block.") { |block| execute = true; execute_block = block }
+    parser.on("-s", "--settings", "Launches the LoveShell Settings prompt.") { settings = true }
+    parser.on("-p", "--pause", "(Usable with -x or -s) Shell doesn't exit after execution of the task finishes.") { pause = true }
+    parser.on("-h", "--help", "Shows this help.") { puts parser; exit(0) }
+    parser.on("-v", "--version", "Prints LoveShell's version and exits.") { puts "LoveShell version #{VERSION}"; exit(0) }
     parser.invalid_option do |flag|
       STDERR.puts "ERROR: #{flag} is not a valid option."
       STDERR.puts parser
@@ -65,9 +63,7 @@ module LoveShell
     end
   end
 
-
-  #COLORING INPUT
-
+  # COLORING INPUT
 
   fancy.display.add do |ctx, line, yielder|
     line = line.gsub(/^[A-Za-z0-9-]*/, &.colorize(:light_red).mode(:bold))
@@ -81,9 +77,7 @@ module LoveShell
     yielder.call ctx, line
   end
 
-
-  #HELP LINE
-
+  # HELP LINE
 
   help_line_enabled = true
 
@@ -97,7 +91,7 @@ module LoveShell
         words.delete("")
 
         line = ""
-        words.map{|word| line = "#{line} #{word}" }
+        words.map { |word| line = "#{line} #{word}" }
 
         lines << line
       else
@@ -107,25 +101,21 @@ module LoveShell
     lines # Return the lines so far
   end
 
-
-  #AUTOCOMPLETION
-
+  # AUTOCOMPLETION
 
   fancy.autocomplete.add do |ctx, range, word, yielder|
     completions = yielder.call(ctx, range, word)
     prev_char = ctx.editor.line[ctx.editor.cursor - 1]?
 
-
     arg_begin = ctx.editor.line.rindex(' ', ctx.editor.cursor - 1) || 0
     arg_end = ctx.editor.line.index(' ', arg_begin + 1) || ctx.editor.line.size
     range = (arg_begin + 1)...arg_end
 
-    if (get_command(ctx) != ctx.editor.line[arg_begin...arg_end].strip) && ctx.editor.line[arg_begin...arg_end] != "" || { '/', '.' }.includes?(prev_char)
+    if (get_command(ctx) != ctx.editor.line[arg_begin...arg_end].strip) && ctx.editor.line[arg_begin...arg_end] != "" || {'/', '.'}.includes?(prev_char)
       path = ctx.editor.line[range].strip
     elsif ctx.editor.line[arg_begin...arg_end] != ""
       command = ctx.editor.line[arg_begin...arg_end].strip
     end
-
 
     if path
       path = path.sub("~", "/home/#{Process.user}")
@@ -145,39 +135,35 @@ module LoveShell
     completions
   end
 
+  # MISC KEYBINDS
 
-  #MISC KEYBINDS
-
-
-  #fancy.actions.set Fancyline::Key::Control::AltH do |ctx|
+  # fancy.actions.set Fancyline::Key::Control::AltH do |ctx|
   #  if command = get_command(ctx)
   #    system("man #{command}")
   #  end
-  #end
+  # end
 
   fancy.actions.set Fancyline::Key::Control::AltH do |ctx|
     help_line_enabled = !help_line_enabled
     ctx.clear_info
   end
   fancy.actions.set Fancyline::Key::Control::CtrlC do |ctx|
-    #Do Nothing
+    # Do Nothing
   end
 
   Signal::INT.trap do
-    #Do Nothing
+    # Do Nothing
   end
 
   fancy.actions.set Fancyline::Key::Control::CtrlD do |ctx|
-    #Do Nothing
+    # Do Nothing
   end
 
   fancy.actions.set Fancyline::Key::Control::CtrlR do |ctx|
-    #No default history search for you
+    # No default history search for you
   end
 
-
-  #HISTORY CONTROL
-
+  # HISTORY CONTROL
 
   fancy.actions.set Fancyline::Key::Control::Up do |ctx|
     historian.saveLine(ctx.editor.line) if historian.getPosition == -1
@@ -190,9 +176,7 @@ module LoveShell
     ctx.editor.move_cursor(ctx.editor.line.size)
   end
 
-
-  #THE MAIN LOOP
-
+  # THE MAIN LOOP
 
   historian.log(%(#<3# Opened LoveShell instance with PID ) + "#{Process.pid}" + " on " + "#{Time.now}")
 
@@ -230,13 +214,13 @@ module LoveShell
         wizard.start
       elsif !commands.exists? args[0]
         puts "LoveShell".colorize(:magenta).to_s +
-        ":".colorize.mode(:bold).to_s +
-        " Command ".colorize(:yellow).to_s +
-        %(").colorize.mode(:bold).to_s +
-        args[0].colorize(:red).mode(:bold).to_s +
-        %(" ).colorize.mode(:bold).to_s +
-        "not found".colorize(:yellow).to_s +
-        "!".colorize(:red).to_s
+             ":".colorize.mode(:bold).to_s +
+             " Command ".colorize(:yellow).to_s +
+             %(").colorize.mode(:bold).to_s +
+             args[0].colorize(:red).mode(:bold).to_s +
+             %(" ).colorize.mode(:bold).to_s +
+             "not found".colorize(:yellow).to_s +
+             "!".colorize(:red).to_s
       else
         system(input)
       end

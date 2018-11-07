@@ -2,8 +2,7 @@ require "config"
 require "file_utils"
 
 class ConfigManager
-
-  CONFIG_PATH = "/home/#{Process.user}/.config/LoveShell/LoveShell.conf"
+  CONFIG_PATH   = "/home/#{Process.user}/.config/LoveShell/LoveShell.conf"
   CONFIG_FOLDER = "/home/#{Process.user}/.config/LoveShell/"
 
   if !File.exists?(CONFIG_PATH)
@@ -61,11 +60,10 @@ class ConfigManager
     git_status: "left")
 
   def changeTheme(name : String)
-    #tbd
+    # tbd
   end
 
   def initialize
-
   end
 
   def regenConfig

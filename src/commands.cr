@@ -32,8 +32,8 @@ class Commands
       cmd_exists = false
       getCommands.each do |cmd|
         if command == cmd
-           cmd_exists = true
-         end
+          cmd_exists = true
+        end
       end
       if (command.includes? '.') || (command.includes? '/')
         cmd_exists = true

@@ -1,5 +1,4 @@
 class Historian
-
   HISTORY_PATH = "/home/#{Process.user}/.hist.love"
   @@position = -1
   @@savedLine = ""

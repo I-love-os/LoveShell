@@ -3,7 +3,6 @@ require "./prompt"
 require "./config_manager"
 
 class Wizard
-
   @fancy = Fancyline.new
   @prompt = Prompt.new
   @config = ConfigManager.new

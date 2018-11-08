@@ -35,7 +35,7 @@ class Commands
           cmd_exists = true
         end
       end
-      if (command.includes? '.') || (command.includes? '/')
+      if (command.includes? '.') || (command.includes? '/') || (command.includes? '#')
         cmd_exists = true
       end
     else

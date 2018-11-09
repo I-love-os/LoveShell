@@ -66,12 +66,12 @@ module LoveShell
   # COLORING INPUT
 
   fancy.display.add do |ctx, line, yielder|
-    line = line.gsub(/^[A-Za-z0-9-]*/, &.colorize(:light_red).mode(:bold))
+    line = line.gsub(/^[A-Za-z0-9-\--_]*/, &.colorize(:light_red).mode(:bold))
     line = line.gsub(/(\|\s*)([A-Za-z0-9-]*)/) do
       "#{$1}#{$2.colorize(:light_red).mode(:bold)}"
     end
 
-    line = line.gsub(/ --?[A-Za-z0-9-]*/, &.colorize(:magenta))
+    line = line.gsub(/ --?[A-Za-z0-9-\--_]*/, &.colorize(:magenta))
     line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(:cyan).mode(:underline))
 
     yielder.call ctx, line
@@ -85,17 +85,19 @@ module LoveShell
     lines = yielder.call(ctx) # First run the next part of the middleware chain
 
     if (command = get_command(ctx)) && help_line_enabled # Grab the command
-      help_line = `whatis #{command} 2> /dev/null`.lines.first?
-      if help_line
-        words = help_line.to_s.split(" ")
-        words.delete("")
+      if (!command.includes? "\"") && (!command.includes? "\'") && (!command.includes? "\(") && (!command.includes? "\)") && (!command.includes? "&&&")  && (!command.includes? ";;") 
+        help_line = `whatis #{command} 2> /dev/null`.lines.first?
+        if help_line
+          words = help_line.to_s.split(" ")
+          words.delete("")
 
-        line = ""
-        words.map { |word| line = "#{line} #{word}" }
+          line = ""
+          words.map { |word| line = "#{line} #{word}" }
 
-        lines << line
-      else
-        ctx.clear_info
+          lines << line
+        else
+          ctx.clear_info
+        end
       end
     end
     lines # Return the lines so far

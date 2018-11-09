@@ -33,7 +33,7 @@ class ConfigManager
   @@config = Config.file(CONFIG_PATH)
 
   DEFAULT_CONFIG =
-    %(# LOVESHELL CONFIGURATION FILE
+    %{# LOVESHELL CONFIGURATION FILE
 
     # Clock - Changes format of the clock displayed on the far right of the prompt.
     # Available values are "off", "24h", or "12h".
@@ -57,7 +57,12 @@ class ConfigManager
     # If you're not a developer don't worry about this option.
     # Available values are "left", "right", or "off".
 
-    git_status: "left")
+    git_status: "left"
+
+    # History Length - dictates the length of you history file (located in ~/hit.love)
+    # Available values are: any integer.
+
+    hist_length: "3000"}
 
   def changeTheme(name : String)
     # tbd
@@ -91,7 +96,7 @@ class ConfigManager
     begin
       @@config.as_s(key)
     rescue
-      "key not found xd"
+      "-1"
     end
   end
 

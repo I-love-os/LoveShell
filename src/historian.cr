@@ -1,9 +1,26 @@
+require "./config_manager"
+
 class Historian
+
+  @@config = ConfigManager.new
+
   HISTORY_PATH = "/home/#{Process.user}/.hist.love"
+  HIST_LENGTH = @@config.getProperty("hist_length").to_i
   @@position = -1
   @@savedLine = ""
 
   def log(message : String)
+    histarray = File.read_lines(HISTORY_PATH)
+    if HIST_LENGTH < 0
+      puts "Something seems wrong with your config file... I advise you regenerate it."
+      @@config.regenConfig
+    end
+    if histarray.size >= HIST_LENGTH
+      histarray.delete_at(0)
+      String.build do |str|
+        histarray.each { |e| str << e << "\n"}
+      end
+    end
     if message != ""
       histfile = File.new(HISTORY_PATH, "a")
       histfile.puts(message)

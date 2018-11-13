@@ -2,6 +2,13 @@ require "config"
 require "file_utils"
 
 class ConfigManager
+
+  @clock : String
+  @powerline : String
+  @floating_prompt : String
+  @git_status : String
+  @hist_length : Int32
+
   CONFIG_PATH   = "/home/#{Process.user}/.config/LoveShell/LoveShell.conf"
   CONFIG_FOLDER = "/home/#{Process.user}/.config/LoveShell/"
 
@@ -30,7 +37,7 @@ class ConfigManager
     end
     file.close
   end
-  @@config = Config.file(CONFIG_PATH)
+  CONFIG = Config.file(CONFIG_PATH)
 
   DEFAULT_CONFIG =
     %{# LOVESHELL CONFIGURATION FILE
@@ -62,13 +69,14 @@ class ConfigManager
     # History Length - dictates the length of you history file (located in ~/hit.love)
     # Available values are: any integer.
 
-    hist_length: "3000"}
-
-  def changeTheme(name : String)
-    # tbd
-  end
+    hist_length: 3000}
 
   def initialize
+    @clock = begin CONFIG.as_s("clock") rescue "xd" end
+    @powerline = begin CONFIG.as_s("powerline") rescue "xd" end
+    @floating_prompt = begin CONFIG.as_s("floating_prompt") rescue "xd" end
+    @git_status = begin CONFIG.as_s("git_status") rescue "xd" end
+    @hist_length = begin CONFIG.as_i("hist_length") rescue -1 end
   end
 
   def regenConfig
@@ -94,7 +102,7 @@ class ConfigManager
 
   def getProperty(key : String) : String
     begin
-      @@config.as_s(key)
+      CONFIG.as_s(key)
     rescue
       "-1"
     end
@@ -102,5 +110,25 @@ class ConfigManager
 
   def getProperty(key : Nil) : String
     "Nil"
+  end
+
+  def getClock
+    @clock
+  end
+
+  def getHistLength
+    @hist_length
+  end
+
+  def getPowerline
+    @powerline
+  end
+
+  def getFloatingPrompt
+    @floating_prompt
+  end
+
+  def getGitStatus
+    @git_status
   end
 end

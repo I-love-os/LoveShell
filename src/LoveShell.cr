@@ -1,12 +1,13 @@
-require "fancyline"
-require "colorize"
-require "user_group"
+require "io"
 require "option_parser"
+require "colorize"
+require "fancyline"
+require "user_group"
 require "./prompt"
 require "./historian"
 require "./commands"
 require "./wizard"
-require "io"
+require "./config_manager"
 
 def get_command(ctx)
   line = ctx.editor.line
@@ -32,6 +33,7 @@ module LoveShell
   historian = Historian.new
   commands = Commands.new
   wizard = Wizard.new
+  CONFIG = ConfigManager.new
 
   # ARGUMENT PARSING
 

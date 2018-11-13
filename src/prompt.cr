@@ -3,12 +3,12 @@ require "user_group"
 require "./config_manager"
 
 class Prompt
-  @@config = ConfigManager.new
+  @@config = LoveShell::CONFIG
 
-  GIT_STATUS      = @@config.getProperty("git_status")
-  POWERLINE       = @@config.getProperty("powerline")
-  FLOATING_PROMPT = @@config.getProperty("floating_prompt")
-  CLOCK           = @@config.getProperty("clock")
+  GIT_STATUS      = @@config.getGitStatus
+  POWERLINE       = @@config.getPowerline
+  FLOATING_PROMPT = @@config.getFloatingPrompt
+  CLOCK           = @@config.getClock
   @git_dir = false
 
   def gitCheck

@@ -1,19 +1,22 @@
-require "./config_manager"
+require "./LoveShell"
 
 class Historian
 
-  @@config = ConfigManager.new
-
   HISTORY_PATH = "/home/#{Process.user}/.hist.love"
-  HIST_LENGTH = @@config.getProperty("hist_length").to_i
+  HIST_LENGTH = LoveShell::CONFIG.getHistLength
   @@position = -1
   @@savedLine = ""
+
+  unless File.exists?(HISTORY_PATH)
+    histfile = File.new(HISTORY_PATH, "w+")
+    histfile.puts("#<3# LOG START")
+    histfile.close
+  end
 
   def log(message : String)
     histarray = File.read_lines(HISTORY_PATH)
     if HIST_LENGTH < 0
-      puts "Something seems wrong with your config file... I advise you regenerate it."
-      @@config.regenConfig
+
     end
     if histarray.size >= HIST_LENGTH
       histarray.delete_at(0)

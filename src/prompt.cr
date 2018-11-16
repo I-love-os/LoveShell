@@ -9,6 +9,9 @@ class Prompt
   POWERLINE       = @@config.getPowerline
   FLOATING_PROMPT = @@config.getFloatingPrompt
   CLOCK           = @@config.getClock
+  MACHINE_COLOR   = @@config.getMachineColor
+  DIR_COLOR       = @@config.getDirColor
+  GIT_COLOR       = @@config.getGitColor
   @git_dir = false
 
   def gitCheck
@@ -30,18 +33,18 @@ class Prompt
             if POWERLINE == "on"
               case GIT_STATUS
               when "left"
-                out = "#{"\u{e0a0}".colorize.fore(:black).back(:green)}\
-                      #{line.split('/').last?.colorize.fore(:black).back(:green)}\
-                      #{"\u{e0b0}".colorize(:green)}".to_s
+                out = "#{"\u{e0a0}".colorize.fore(:black).back(GIT_COLOR)}\
+                      #{line.split('/').last?.colorize.fore(:black).back(GIT_COLOR)}\
+                      #{"\u{e0b0}".colorize(GIT_COLOR)}".to_s
               when "right"
-                out = "#{"\u{e0b2}".colorize(:green)}\
-                      #{"\u{e0a0}".colorize.fore(:black).back(:green)}\
-                      #{line.split('/').last?.colorize.fore(:black).back(:green)}\
-                      #{"\u{e0b0}".colorize(:green)}".to_s
+                out = "#{"\u{e0b2}".colorize(GIT_COLOR)}\
+                      #{"\u{e0a0}".colorize.fore(:black).back(GIT_COLOR)}\
+                      #{line.split('/').last?.colorize.fore(:black).back(GIT_COLOR)}\
+                      #{"\u{e0b0}".colorize(GIT_COLOR)}".to_s
               when "off"
                 out = ""
               else
-                out = "git_status: wrong config value (#{GIT_STATUS})".colorize(:red).mode(:bold).to_s
+                out = "git_status: wrong config value (#{GIT_STATUS})".colorize(MACHINE_COLOR).mode(:bold).to_s
               end
             else
               out = "(#{line.split('/').last?})".colorize(:blue).to_s
@@ -67,24 +70,24 @@ class Prompt
     if POWERLINE == "on"
       gitCheck
       out = "#{prod_prefix}\
-            #{FLOATING_PROMPT == "on" ? "\u{e0b2}".colorize(:red) : "\u{2588}".colorize(:red)}\
-            #{Process.user.colorize.fore(:black).back(:red)}\
-            #{"@".colorize.fore(:black).back(:red)}\
-            #{System.hostname.colorize.fore(:black).back(:red)}\
-            #{"\u{e0b0}".colorize.fore(:red).back(:yellow)}\
-            #{Dir.current.sub("/home/#{Process.user}", "~").colorize.fore(:black).back(:yellow)}\
-            #{GIT_STATUS == "left" && @git_dir == true ? "\u{e0b0}".colorize.fore(:yellow).back(:green) : "\u{e0b0}".colorize(:yellow)}\
-            #{GIT_STATUS == "left" ? "#{git}" : ""}#{"\u{e0b1}".colorize(:light_red)} ".to_s
+            #{FLOATING_PROMPT == "on" ? "\u{e0b2}".colorize(MACHINE_COLOR) : "\u{2588}".colorize(MACHINE_COLOR)}\
+            #{Process.user.colorize.fore(:black).back(MACHINE_COLOR)}\
+            #{"@".colorize.fore(:black).back(MACHINE_COLOR)}\
+            #{System.hostname.colorize.fore(:black).back(MACHINE_COLOR)}\
+            #{"\u{e0b0}".colorize.fore(MACHINE_COLOR).back(DIR_COLOR)}\
+            #{Dir.current.sub("/home/#{Process.user}", "~").colorize.fore(:black).back(DIR_COLOR)}\
+            #{GIT_STATUS == "left" && @git_dir == true ? "\u{e0b0}".colorize.fore(DIR_COLOR).back(GIT_COLOR) : "\u{e0b0}".colorize(DIR_COLOR)}\
+            #{GIT_STATUS == "left" ? "#{git}" : ""}#{"\u{e0b1}".colorize(MACHINE_COLOR)} ".to_s
     else
       out = "#{prod_prefix}\
-            #{"[".colorize(:red)}\
-            #{Process.user.colorize(:yellow)}\
-            #{"@".colorize(:red)}\
-            #{System.hostname.colorize(:yellow)}\
-            #{"] ".colorize(:red)}\
+            #{"[".colorize(MACHINE_COLOR)}\
+            #{Process.user.colorize(DIR_COLOR)}\
+            #{"@".colorize(MACHINE_COLOR)}\
+            #{System.hostname.colorize(DIR_COLOR)}\
+            #{"] ".colorize(MACHINE_COLOR)}\
             #{Dir.current.sub("/home/#{Process.user}", "~").colorize.mode(:bold)}\
             #{GIT_STATUS == "left" ? " #{git}" : ""}\
-            #{" ->".colorize(:light_red)} ".to_s
+            #{" ->".colorize(MACHINE_COLOR)} ".to_s
     end
     out
   end
@@ -97,10 +100,10 @@ class Prompt
     end
 
     "#{prod_prefix}\
-    #{"[".colorize(:red)}\
+    #{"[".colorize(MACHINE_COLOR)}\
     #{"LOVESHELL SETTINGS".colorize(:magenta)}\
-    #{"]".colorize(:red)}\
-    #{" ->".colorize(:light_red)} ".to_s
+    #{"]".colorize(MACHINE_COLOR)}\
+    #{" ->".colorize(MACHINE_COLOR)} ".to_s
   end
 
   def right : String

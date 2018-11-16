@@ -1,5 +1,6 @@
 require "config"
 require "file_utils"
+require "colorize"
 
 class ConfigManager
 
@@ -40,25 +41,25 @@ class ConfigManager
   CONFIG = Config.file(CONFIG_PATH)
 
   DEFAULT_CONFIG =
-    %{# LOVESHELL CONFIGURATION FILE
+    %[# LOVESHELL CONFIGURATION FILE
 
     # Clock - Changes format of the clock displayed on the far right of the prompt.
     # Available values are "off", "24h", or "12h".
 
-    clock: "24h",
+    clock: "24h"
 
     # Powerline - Uses iconic fonts (such as Powerline) to create a more visually appealing prompt.
     # Requires a patched font (I recommend Nerd Fonts: https://nerdfonts.com/)
     # Turn off or install a patched font if your prompt looks weird (blank rectangles, weird lines...).
     # Available values are "off", or "on".
 
-    powerline: "on",
+    powerline: "on"
 
     # Floating prompt - (usable only with Powerline ON)
     # Is the float supposed to appear floating, or connected to the left side of the terminal.
     # Available values are "off", or "on".
 
-    floating_prompt = "off",
+    floating_prompt = "off"
 
     # Git Status - Shows the current Git branch if your current workinng directory is a Git repository.
     # If you're not a developer don't worry about this option.
@@ -69,7 +70,15 @@ class ConfigManager
     # History Length - dictates the length of you history file (located in ~/hist.love)
     # Available values are: any integer.
 
-    hist_length: 3000}
+    hist_length: 3000
+
+    # Custom colors in hex RGB values, for example: "#FF0000" is red
+
+    colors: {
+      machine_color: "#E06C75"
+      dir_color: "#D19A66"
+      git_color: "#98C379"
+    }]
 
   def initialize
     @clock = begin CONFIG.as_s("clock") rescue "xd" end
@@ -82,6 +91,9 @@ class ConfigManager
       puts "Something seems wrong: #{exception}"
       -1
     end
+    @machine_color = Colorize::ColorRGB.new(getColor("machine_color")[0], getColor("machine_color")[1], getColor("machine_color")[2])
+    @dir_color = Colorize::ColorRGB.new(getColor("dir_color")[0], getColor("dir_color")[1], getColor("dir_color")[2])
+    @git_color = Colorize::ColorRGB.new(getColor("git_color")[0], getColor("git_color")[1], getColor("git_color")[2])
   end
 
   def regenConfig
@@ -143,5 +155,25 @@ class ConfigManager
 
   def getGitStatus
     @git_status
+  end
+
+  def getColor(color : String)
+    hex = CONFIG.as_h("colors")[color].to_s.downcase
+    r = hex.byte_slice(1, 2).to_u8(16)
+    g = hex.byte_slice(3, 2).to_u8(16)
+    b = hex.byte_slice(5, 2).to_u8(16)
+    [r, g, b]
+  end
+
+  def getMachineColor
+    @machine_color
+  end
+
+  def getDirColor
+    @dir_color
+  end
+
+  def getGitColor
+    @git_color
   end
 end

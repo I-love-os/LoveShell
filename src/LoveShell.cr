@@ -38,6 +38,8 @@ module LoveShell
   COMMAND_COLOR = CONFIG.getMachineColor
   STRING_COLOR  = CONFIG.getDirColor
   ARG_COLOR     = CONFIG.getGitColor
+  HELP_LINE     = CONFIG.getHelpLine
+  HELP_TIP      = CONFIG.getHelpTip
 
   # ARGUMENT PARSING
 
@@ -85,7 +87,7 @@ module LoveShell
 
   # HELP LINE
 
-  help_line_enabled = true
+  help_line_enabled = HELP_LINE == "on" ? true : false
 
   fancy.sub_info.add do |ctx, yielder|
     lines = yielder.call(ctx) # First run the next part of the middleware chain
@@ -100,7 +102,11 @@ module LoveShell
           line = ""
           words.map { |word| line = "#{line} #{word}" }
 
-          lines << line
+          if HELP_TIP == "on"
+            lines << line << "(Ctrl+H for more info)"
+          else
+            lines << line
+          end
         else
           ctx.clear_info
         end
@@ -145,11 +151,11 @@ module LoveShell
 
   # MISC KEYBINDS
 
-  # fancy.actions.set Fancyline::Key::Control::AltH do |ctx|
-  #  if command = get_command(ctx)
-  #    system("man #{command}")
-  #  end
-  # end
+   fancy.actions.set Fancyline::Key::Control::CtrlH do |ctx|
+    if command = get_command(ctx)
+      system("man #{command}")
+    end
+   end
 
   fancy.actions.set Fancyline::Key::Control::AltH do |ctx|
     help_line_enabled = !help_line_enabled
@@ -222,13 +228,13 @@ module LoveShell
         wizard.start
       elsif !commands.exists? input
         puts "LoveShell".colorize(ARG_COLOR).to_s +
-             ":".colorize.mode(:bold).to_s +
-             " Command ".colorize(:yellow).to_s +
+             ":".colorize(ARG_COLOR).mode(:bold).to_s +
+             " Command ".colorize(STRING_COLOR).to_s +
              %(").colorize.mode(:bold).to_s +
-             args[0].colorize(:red).mode(:bold).to_s +
+             args[0].colorize(COMMAND_COLOR).mode(:bold).to_s +
              %(" ).colorize.mode(:bold).to_s +
-             "not found".colorize(:yellow).to_s +
-             "!".colorize(:red).to_s
+             "not found".colorize(STRING_COLOR).to_s +
+             "!".colorize(COMMAND_COLOR).to_s
       else
         system(input)
       end

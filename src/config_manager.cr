@@ -9,6 +9,8 @@ class ConfigManager
   @floating_prompt : String
   @git_status : String
   @pl_style : String
+  @help_line : String
+  @help_tip : String
   @hist_length : Int32
 
   CONFIG_PATH   = "/home/#{Process.user}/.config/LoveShell/LoveShell.conf"
@@ -75,6 +77,17 @@ class ConfigManager
 
     git_status: "left"
 
+    # Help line - Shows a quick summary of the command under the prompt.
+    # It can be toggled on the fly using Alt+H, but you can change the default state here
+    # Available values are "off", or "on".
+
+    help_line: "on"
+
+    # Help tip - Toggles the visibility of the "Ctrl+H for more info" tooltip when the help line is enabled.
+    # Available values are "off", or "on".
+
+    help_tip: "on"
+
     # History Length - dictates the length of you history file (located in ~/hist.love)
     # Available values are: any integer.
 
@@ -91,11 +104,13 @@ class ConfigManager
     }]
 
   def initialize
-    @clock = begin CONFIG.as_s("clock") rescue "24h" end
+    @clock = begin CONFIG.as_s("clock") rescue "off" end
     @powerline = begin CONFIG.as_s("powerline") rescue "off" end
     @floating_prompt = begin CONFIG.as_s("floating_prompt") rescue "off" end
     @git_status = begin CONFIG.as_s("git_status") rescue "off" end
     @pl_style = begin CONFIG.as_s("pl_style") rescue "sharp" end
+    @help_line = begin CONFIG.as_s("help_line") rescue "off" end
+    @help_tip = begin CONFIG.as_s("help_tip") rescue "off" end
     @hist_length = begin CONFIG.as_i("hist_length") rescue -1 end
 
     @machine_color = Colorize::ColorRGB.new(getColor("machine_color")[0], getColor("machine_color")[1], getColor("machine_color")[2])
@@ -178,8 +193,21 @@ class ConfigManager
     @pl_style
   end
 
+  def getHelpLine
+    @help_line
+  end
+
+  def getHelpTip
+    @help_tip
+  end
+
   def getColor(color : String)
-    hex = begin CONFIG.as_h("colors")[color].to_s.downcase rescue "#000000" end
+    hex = begin
+      CONFIG.as_h("colors")[color].to_s.downcase
+    rescue
+      puts %[Couldn't find color "#{color}" in the config file. Using black (#000000) instead. Edit the config file or regenerate it to fix the issue.]
+      "#000000"
+    end
     r = hex.byte_slice(1, 2).to_u8(16)
     g = hex.byte_slice(3, 2).to_u8(16)
     b = hex.byte_slice(5, 2).to_u8(16)

@@ -13,8 +13,10 @@ class Prompt
   MACHINE_COLOR   = @@config.getMachineColor
   DIR_COLOR       = @@config.getDirColor
   GIT_COLOR       = @@config.getGitColor
+  GIT_DIFF_COLOR  = @@config.getGitDiffColor
   FONT_COLOR      = @@config.getFontColor
   @git_dir = false
+  @git_color : Colorize::ColorRGB = GIT_COLOR
 
   LEFT_SYMBOL = begin
     case PL_STYLE
@@ -81,6 +83,16 @@ class Prompt
     end
   end
 
+  def diffCheck
+    diff = `git diff 2> /dev/null`.lines.first?.to_s
+
+    if !diff.empty?
+      @git_color = GIT_DIFF_COLOR
+    else
+      @git_color = GIT_COLOR
+    end
+  end
+
   def git : String
     out = ""
     if Dir.exists? Dir.current + "/.git"
@@ -89,24 +101,25 @@ class Prompt
         git_config.each do |line|
           if /^ref:/.match(line)
             @git_dir = true
+
             if POWERLINE == "on"
               case GIT_STATUS
               when "left"
-                out = "#{"\u{e0a0}".colorize.fore(FONT_COLOR).back(GIT_COLOR)}\
-                      #{line.split('/').last?.colorize.fore(FONT_COLOR).back(GIT_COLOR)}\
-                      #{RIGHT_SYMBOL.colorize(GIT_COLOR)}".to_s
+                out = "#{"\u{e0a0}".colorize.fore(FONT_COLOR).back(@git_color)}\
+                      #{line.split('/').last?.colorize.fore(FONT_COLOR).back(@git_color)}\
+                      #{RIGHT_SYMBOL.colorize(@git_color)}".to_s
               when "right"
-                out = "#{LEFT_SYMBOL.colorize(GIT_COLOR)}\
-                      #{"\u{e0a0}".colorize.fore(FONT_COLOR).back(GIT_COLOR)}\
-                      #{line.split('/').last?.colorize.fore(FONT_COLOR).back(GIT_COLOR)}\
-                      #{RIGHT_SYMBOL.colorize(GIT_COLOR)}".to_s
+                out = "#{LEFT_SYMBOL.colorize(@git_color)}\
+                      #{"\u{e0a0}".colorize.fore(FONT_COLOR).back(@git_color)}\
+                      #{line.split('/').last?.colorize.fore(FONT_COLOR).back(@git_color)}\
+                      #{RIGHT_SYMBOL.colorize(@git_color)}".to_s
               when "off"
                 out = ""
               else
                 out = "git_status: wrong config value (#{GIT_STATUS})".colorize(MACHINE_COLOR).mode(:bold).to_s
               end
             else
-              out = "(#{line.split('/').last?})".colorize(GIT_COLOR).to_s
+              out = "(#{line.split('/').last?})".colorize(@git_color).to_s
             end
           else
             @git_dir = false
@@ -127,6 +140,7 @@ class Prompt
     end
 
     if POWERLINE == "on"
+      diffCheck
       gitCheck
       out = "#{prod_prefix}\
             #{FLOATING_PROMPT == "on" ? LEFT_SYMBOL.colorize(MACHINE_COLOR) : "\u{2588}".colorize(MACHINE_COLOR)}\
@@ -135,7 +149,7 @@ class Prompt
             #{System.hostname.colorize.fore(FONT_COLOR).back(MACHINE_COLOR)}\
             #{RIGHT_SYMBOL.colorize.fore(MACHINE_COLOR).back(DIR_COLOR)}\
             #{Dir.current.sub("/home/#{Process.user}", "~").colorize.fore(FONT_COLOR).back(DIR_COLOR)}\
-            #{GIT_STATUS == "left" && @git_dir == true ? RIGHT_SYMBOL.colorize.fore(DIR_COLOR).back(GIT_COLOR) : RIGHT_SYMBOL.colorize(DIR_COLOR)}\
+            #{GIT_STATUS == "left" && @git_dir == true ? RIGHT_SYMBOL.colorize.fore(DIR_COLOR).back(@git_color) : RIGHT_SYMBOL.colorize(DIR_COLOR)}\
             #{GIT_STATUS == "left" ? "#{git}" : ""}#{PROMPT_SYMBOL.colorize(MACHINE_COLOR)} ".to_s
     else
       out = "#{prod_prefix}\

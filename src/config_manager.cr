@@ -86,6 +86,7 @@ class ConfigManager
       machine_color: "#E06C75"
       dir_color: "#D19A66"
       git_color: "#98C379"
+      git_diff_color: "#ffff6e"
       font_color: "#000000"
     }]
 
@@ -100,6 +101,7 @@ class ConfigManager
     @machine_color = Colorize::ColorRGB.new(getColor("machine_color")[0], getColor("machine_color")[1], getColor("machine_color")[2])
     @dir_color = Colorize::ColorRGB.new(getColor("dir_color")[0], getColor("dir_color")[1], getColor("dir_color")[2])
     @git_color = Colorize::ColorRGB.new(getColor("git_color")[0], getColor("git_color")[1], getColor("git_color")[2])
+    @git_diff_color = Colorize::ColorRGB.new(getColor("git_diff_color")[0], getColor("git_diff_color")[1], getColor("git_diff_color")[2])
     @font_color = Colorize::ColorRGB.new(getColor("font_color")[0], getColor("font_color")[1], getColor("font_color")[2])
   end
 
@@ -194,6 +196,10 @@ class ConfigManager
 
   def getGitColor
     @git_color
+  end
+
+  def getGitDiffColor
+    @git_diff_color
   end
 
   def getFontColor

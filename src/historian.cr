@@ -5,13 +5,13 @@ class Historian
   @@position = -1
   @@savedLine = ""
 
-  unless File.exists?(HISTORY_PATH)
-    histfile = File.new(HISTORY_PATH, "w+")
-    histfile.puts("#<3# LOG START")
-    histfile.close
-  end
-
   def log(message : String)
+    unless File.exists?(HISTORY_PATH)
+      histfile = File.new(HISTORY_PATH, "w+")
+      histfile.puts("#<3# LOG START")
+      histfile.close
+    end
+
     xd = ""
     histarray = File.read_lines(HISTORY_PATH)
     if HIST_LENGTH < 0

@@ -22,6 +22,16 @@ class Prompt
       "\u{e0b2}"
     when "round"
       "\u{e0b6}"
+    when "pixels"
+      "\u{e0c7}"
+    when "ramp-up"
+      "\u{e0ba}"
+    when "ramp-down"
+      "\u{e0be}"
+    when "fire"
+      "\u{e0c2}"
+    when "trapezoid"
+      "\u{e0d4}"
     else
       "\u{e0b2}"
     end
@@ -33,6 +43,16 @@ class Prompt
       "\u{e0b0}"
     when "round"
       "\u{e0b4}"
+    when "pixels"
+      "\u{e0c6}"
+    when "ramp-up"
+      "\u{e0bc}"
+    when "ramp-down"
+      "\u{e0b8}"
+    when "fire"
+      "\u{e0c0}"
+    when "trapezoid"
+      "\u{e0d2}"
     else
       "\u{e0b0}"
     end
@@ -44,6 +64,10 @@ class Prompt
       "\u{e0b1}"
     when "round"
       "\u{e0b5}"
+    when "ramp-up"
+      "\u{e0bb}"
+    when "ramp-down"
+      "\u{e0b9}"
     else
       "\u{e0b1}"
     end

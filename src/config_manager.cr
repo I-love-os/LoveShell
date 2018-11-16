@@ -59,12 +59,12 @@ class ConfigManager
     # Powerline Style - What style of separators and symbols should the prompt use.
     # Requires a font patched with Powerline Extra Symbols (Go download a Nerd Font already: https://nerdfonts.com/)
     # Usable only with Powerline ON
-    # Available values are "sharp" or "round"
+    # Available values are "sharp", "round", "pixels", "ramp-up", "ramp-down", "fire", "trapezoid".
 
     pl_style: "sharp"
 
     # Floating prompt - (usable only with Powerline ON)
-    # Is the float supposed to appear floating, or connected to the left side of the terminal.
+    # Is the prompt supposed to appear detached, or connected to the left side of the terminal.
     # Available values are "off", or "on".
 
     floating_prompt = "off"

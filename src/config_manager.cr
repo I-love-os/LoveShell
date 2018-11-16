@@ -78,6 +78,7 @@ class ConfigManager
       machine_color: "#E06C75"
       dir_color: "#D19A66"
       git_color: "#98C379"
+      font_color: "#000000"
     }]
 
   def initialize
@@ -94,6 +95,7 @@ class ConfigManager
     @machine_color = Colorize::ColorRGB.new(getColor("machine_color")[0], getColor("machine_color")[1], getColor("machine_color")[2])
     @dir_color = Colorize::ColorRGB.new(getColor("dir_color")[0], getColor("dir_color")[1], getColor("dir_color")[2])
     @git_color = Colorize::ColorRGB.new(getColor("git_color")[0], getColor("git_color")[1], getColor("git_color")[2])
+    @font_color = Colorize::ColorRGB.new(getColor("font_color")[0], getColor("font_color")[1], getColor("font_color")[2])
   end
 
   def regenConfig
@@ -129,6 +131,14 @@ class ConfigManager
     begin
       CONFIG.as_i(key).to_s
     rescue
+      getPropertyHash(key)
+    end
+  end
+
+  def getPropertyHash(key : String)
+    begin
+      CONFIG.as_h(key).to_s
+    rescue
       "Error"
     end
   end
@@ -158,7 +168,7 @@ class ConfigManager
   end
 
   def getColor(color : String)
-    hex = CONFIG.as_h("colors")[color].to_s.downcase
+    hex = begin CONFIG.as_h("colors")[color].to_s.downcase rescue "#000000" end
     r = hex.byte_slice(1, 2).to_u8(16)
     g = hex.byte_slice(3, 2).to_u8(16)
     b = hex.byte_slice(5, 2).to_u8(16)
@@ -175,5 +185,9 @@ class ConfigManager
 
   def getGitColor
     @git_color
+  end
+
+  def getFontColor
+    @font_color
   end
 end

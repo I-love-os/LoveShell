@@ -12,6 +12,7 @@ class Prompt
   MACHINE_COLOR   = @@config.getMachineColor
   DIR_COLOR       = @@config.getDirColor
   GIT_COLOR       = @@config.getGitColor
+  FONT_COLOR      = @@config.getFontColor
   @git_dir = false
 
   def gitCheck
@@ -33,13 +34,13 @@ class Prompt
             if POWERLINE == "on"
               case GIT_STATUS
               when "left"
-                out = "#{"\u{e0a0}".colorize.fore(:black).back(GIT_COLOR)}\
-                      #{line.split('/').last?.colorize.fore(:black).back(GIT_COLOR)}\
+                out = "#{"\u{e0a0}".colorize.fore(FONT_COLOR).back(GIT_COLOR)}\
+                      #{line.split('/').last?.colorize.fore(FONT_COLOR).back(GIT_COLOR)}\
                       #{"\u{e0b0}".colorize(GIT_COLOR)}".to_s
               when "right"
                 out = "#{"\u{e0b2}".colorize(GIT_COLOR)}\
-                      #{"\u{e0a0}".colorize.fore(:black).back(GIT_COLOR)}\
-                      #{line.split('/').last?.colorize.fore(:black).back(GIT_COLOR)}\
+                      #{"\u{e0a0}".colorize.fore(FONT_COLOR).back(GIT_COLOR)}\
+                      #{line.split('/').last?.colorize.fore(FONT_COLOR).back(GIT_COLOR)}\
                       #{"\u{e0b0}".colorize(GIT_COLOR)}".to_s
               when "off"
                 out = ""
@@ -71,11 +72,11 @@ class Prompt
       gitCheck
       out = "#{prod_prefix}\
             #{FLOATING_PROMPT == "on" ? "\u{e0b2}".colorize(MACHINE_COLOR) : "\u{2588}".colorize(MACHINE_COLOR)}\
-            #{Process.user.colorize.fore(:black).back(MACHINE_COLOR)}\
-            #{"@".colorize.fore(:black).back(MACHINE_COLOR)}\
-            #{System.hostname.colorize.fore(:black).back(MACHINE_COLOR)}\
+            #{Process.user.colorize.fore(FONT_COLOR).back(MACHINE_COLOR)}\
+            #{"@".colorize.fore(FONT_COLOR).back(MACHINE_COLOR)}\
+            #{System.hostname.colorize.fore(FONT_COLOR).back(MACHINE_COLOR)}\
             #{"\u{e0b0}".colorize.fore(MACHINE_COLOR).back(DIR_COLOR)}\
-            #{Dir.current.sub("/home/#{Process.user}", "~").colorize.fore(:black).back(DIR_COLOR)}\
+            #{Dir.current.sub("/home/#{Process.user}", "~").colorize.fore(FONT_COLOR).back(DIR_COLOR)}\
             #{GIT_STATUS == "left" && @git_dir == true ? "\u{e0b0}".colorize.fore(DIR_COLOR).back(GIT_COLOR) : "\u{e0b0}".colorize(DIR_COLOR)}\
             #{GIT_STATUS == "left" ? "#{git}" : ""}#{"\u{e0b1}".colorize(MACHINE_COLOR)} ".to_s
     else

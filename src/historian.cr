@@ -1,5 +1,3 @@
-require "./LoveShell"
-
 class Historian
 
   HISTORY_PATH = "/home/#{Process.user}/.hist.love"
@@ -14,14 +12,17 @@ class Historian
   end
 
   def log(message : String)
+    xd = ""
     histarray = File.read_lines(HISTORY_PATH)
     if HIST_LENGTH < 0
-
-    end
-    if histarray.size >= HIST_LENGTH
-      histarray.delete_at(0)
-      String.build do |str|
-        histarray.each { |e| str << e << "\n"}
+      # Don't do anything with the history atm
+    else
+      if histarray.size >= HIST_LENGTH
+        histarray.delete_at(0)
+        xd = String.build do |str|
+          histarray.each { |e| str << e << "\n"}
+        end
+        File.write(HISTORY_PATH, xd)
       end
     end
     if message != ""

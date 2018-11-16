@@ -43,7 +43,7 @@ module LoveShell
     parser.on("-s", "--settings", "Launches the LoveShell Settings prompt.") { settings = true }
     parser.on("-p", "--pause", "(Usable with -x or -s) Shell doesn't exit after execution of the task finishes.") { pause = true }
     parser.on("-h", "--help", "Shows this help.") { puts parser; exit(0) }
-    parser.on("-v", "--version", "Prints LoveShell's version and exits.") { puts "LoveShell version #{VERSION}"; exit(0) }
+    parser.on("-v", "--version", "Prints LoveShell's version and exits.") { puts "LoveShell #{VERSION}"; exit(0) }
     parser.invalid_option do |flag|
       STDERR.puts "ERROR: #{flag} is not a valid option."
       STDERR.puts parser
@@ -87,7 +87,7 @@ module LoveShell
     lines = yielder.call(ctx) # First run the next part of the middleware chain
 
     if (command = get_command(ctx)) && help_line_enabled # Grab the command
-      if (!command.includes? "\"") && (!command.includes? "\'") && (!command.includes? "\(") && (!command.includes? "\)") && (!command.includes? "&&&")  && (!command.includes? ";;") 
+      if (!command.includes? "\"") && (!command.includes? "\'") && (!command.includes? "\(") && (!command.includes? "\)") && (!command.includes? "&&&")  && (!command.includes? ";;")
         help_line = `whatis #{command} 2> /dev/null`.lines.first?
         if help_line
           words = help_line.to_s.split(" ")

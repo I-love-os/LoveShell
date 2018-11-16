@@ -66,7 +66,7 @@ class ConfigManager
 
     git_status: "left"
 
-    # History Length - dictates the length of you history file (located in ~/hit.love)
+    # History Length - dictates the length of you history file (located in ~/hist.love)
     # Available values are: any integer.
 
     hist_length: 3000}
@@ -76,7 +76,12 @@ class ConfigManager
     @powerline = begin CONFIG.as_s("powerline") rescue "xd" end
     @floating_prompt = begin CONFIG.as_s("floating_prompt") rescue "xd" end
     @git_status = begin CONFIG.as_s("git_status") rescue "xd" end
-    @hist_length = begin CONFIG.as_i("hist_length") rescue -1 end
+    @hist_length = begin
+      CONFIG.as_i("hist_length")
+    rescue exception
+      puts "Something seems wrong: #{exception}"
+      -1
+    end
   end
 
   def regenConfig
@@ -104,7 +109,15 @@ class ConfigManager
     begin
       CONFIG.as_s(key)
     rescue
-      "-1"
+      getPropertyInt(key)
+    end
+  end
+
+  def getPropertyInt(key : String)
+    begin
+      CONFIG.as_i(key).to_s
+    rescue
+      "Error"
     end
   end
 

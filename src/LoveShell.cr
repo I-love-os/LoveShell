@@ -19,7 +19,7 @@ def get_command(ctx)
 end
 
 module LoveShell
-  VERSION = "0.2.0"
+  VERSION = "0.3.0"
 
   execute = false
   execute_block = ""
@@ -34,6 +34,10 @@ module LoveShell
   commands = Commands.new
   wizard = Wizard.new
   CONFIG = ConfigManager.new
+
+  COMMAND_COLOR = CONFIG.getMachineColor
+  STRING_COLOR  = CONFIG.getDirColor
+  ARG_COLOR     = CONFIG.getGitColor
 
   # ARGUMENT PARSING
 
@@ -68,13 +72,13 @@ module LoveShell
   # COLORING INPUT
 
   fancy.display.add do |ctx, line, yielder|
-    line = line.gsub(/^[A-Za-z0-9-\--_]*/, &.colorize(:light_red).mode(:bold))
+    line = line.gsub(/^[A-Za-z0-9-\--_]*/, &.colorize(COMMAND_COLOR).mode(:bold))
     line = line.gsub(/(\|\s*)([A-Za-z0-9-]*)/) do
-      "#{$1}#{$2.colorize(:light_red).mode(:bold)}"
+      "#{$1}#{$2.colorize(COMMAND_COLOR).mode(:bold)}"
     end
 
-    line = line.gsub(/ --?[A-Za-z0-9-\--_]*/, &.colorize(:magenta))
-    line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(:cyan).mode(:underline))
+    line = line.gsub(/ --?[A-Za-z0-9-\--_]*/, &.colorize(ARG_COLOR))
+    line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(STRING_COLOR).mode(:underline))
 
     yielder.call ctx, line
   end
@@ -217,7 +221,7 @@ module LoveShell
       elsif args[0] == "SETTINGS" || args[0] == "CONFIG" || args[0] == "WIZARD"
         wizard.start
       elsif !commands.exists? args[0]
-        puts "LoveShell".colorize(:magenta).to_s +
+        puts "LoveShell".colorize(ARG_COLOR).to_s +
              ":".colorize.mode(:bold).to_s +
              " Command ".colorize(:yellow).to_s +
              %(").colorize.mode(:bold).to_s +

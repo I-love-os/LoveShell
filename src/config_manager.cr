@@ -8,6 +8,7 @@ class ConfigManager
   @powerline : String
   @floating_prompt : String
   @git_status : String
+  @pl_style : String
   @hist_length : Int32
 
   CONFIG_PATH   = "/home/#{Process.user}/.config/LoveShell/LoveShell.conf"
@@ -55,6 +56,13 @@ class ConfigManager
 
     powerline: "on"
 
+    # Powerline Style - What style of separators and symbols should the prompt use.
+    # Requires a font patched with Powerline Extra Symbols (Go download a Nerd Font already: https://nerdfonts.com/)
+    # Usable only with Powerline ON
+    # Available values are "sharp" or "round"
+
+    pl_style: "sharp"
+
     # Floating prompt - (usable only with Powerline ON)
     # Is the float supposed to appear floating, or connected to the left side of the terminal.
     # Available values are "off", or "on".
@@ -82,16 +90,13 @@ class ConfigManager
     }]
 
   def initialize
-    @clock = begin CONFIG.as_s("clock") rescue "xd" end
-    @powerline = begin CONFIG.as_s("powerline") rescue "xd" end
-    @floating_prompt = begin CONFIG.as_s("floating_prompt") rescue "xd" end
-    @git_status = begin CONFIG.as_s("git_status") rescue "xd" end
-    @hist_length = begin
-      CONFIG.as_i("hist_length")
-    rescue exception
-      puts "Something seems wrong: #{exception}"
-      -1
-    end
+    @clock = begin CONFIG.as_s("clock") rescue "24h" end
+    @powerline = begin CONFIG.as_s("powerline") rescue "off" end
+    @floating_prompt = begin CONFIG.as_s("floating_prompt") rescue "off" end
+    @git_status = begin CONFIG.as_s("git_status") rescue "off" end
+    @pl_style = begin CONFIG.as_s("pl_style") rescue "sharp" end
+    @hist_length = begin CONFIG.as_i("hist_length") rescue -1 end
+
     @machine_color = Colorize::ColorRGB.new(getColor("machine_color")[0], getColor("machine_color")[1], getColor("machine_color")[2])
     @dir_color = Colorize::ColorRGB.new(getColor("dir_color")[0], getColor("dir_color")[1], getColor("dir_color")[2])
     @git_color = Colorize::ColorRGB.new(getColor("git_color")[0], getColor("git_color")[1], getColor("git_color")[2])
@@ -165,6 +170,10 @@ class ConfigManager
 
   def getGitStatus
     @git_status
+  end
+
+  def getPLStyle
+    @pl_style
   end
 
   def getColor(color : String)

@@ -28,6 +28,8 @@ class Commands
   end
 
   def exists?(command) : Bool
+    args = command.split(" ")
+    command = args[0]
     if !command.empty?
       cmd_exists = false
       getCommands.each do |cmd|
@@ -40,6 +42,11 @@ class Commands
       end
     else
       cmd_exists = true
+      args.each do |arg|
+        if !arg.empty?
+          cmd_exists = false
+        end
+      end
     end
 
     cmd_exists

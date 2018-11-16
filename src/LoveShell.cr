@@ -220,7 +220,7 @@ module LoveShell
         system(args.join " ")
       elsif args[0] == "SETTINGS" || args[0] == "CONFIG" || args[0] == "WIZARD"
         wizard.start
-      elsif !commands.exists? args[0]
+      elsif !commands.exists? input
         puts "LoveShell".colorize(ARG_COLOR).to_s +
              ":".colorize.mode(:bold).to_s +
              " Command ".colorize(:yellow).to_s +

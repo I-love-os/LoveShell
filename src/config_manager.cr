@@ -23,22 +23,8 @@ class ConfigManager
       FileUtils.mkdir(CONFIG_FOLDER)
     end
     file = File.new(CONFIG_PATH, "w+")
-    puts "Would you like to populate it with default settings? (Y/N): "
-    while true
-      ans = gets.to_s.chomp.upcase
-      case ans
-      when "Y"
-        puts "gonna do it xd"
-        file.puts DEFAULT_CONFIG
-        break
-      when "N"
-        puts "not gonna do it xd"
-        file.puts "#<3# LOVESHELL CONFIGURATION FILE"
-        break
-      else
-        puts "y or n pls"
-      end
-    end
+    puts "Populating it with default settings..."
+    file.puts DEFAULT_CONFIG
     file.close
   end
   CONFIG = Config.file(CONFIG_PATH)
@@ -95,23 +81,75 @@ class ConfigManager
 
     # Custom colors in hex RGB values, for example: "#FF0000" is red
 
-    colors: {
+    $default = {
       machine_color: "#E06C75"
       dir_color: "#D19A66"
       git_color: "#98C379"
       git_diff_color: "#ffff6e"
       font_color: "#000000"
-    }]
+    }
+
+    $sakura = {
+      machine_color: "#FE87AC"
+      dir_color: "#FECBCF"
+      git_color: "#CFE4DD"
+      git_diff_color: "#FAF0EF"
+      font_color: "#5E556A"
+    }
+
+    $cupcake = {
+      machine_color: "#f2e2cf"
+      dir_color: "#fa556b"
+      git_color: "#907d6f"
+      git_diff_color: "#ffb456"
+      font_color: "#810c13"
+    }
+
+    $lime = {
+      machine_color: "#84b000"
+      dir_color: "#ebe7c3"
+      git_color: "#a8aec1"
+      git_diff_color: "#776477"
+      font_color: "#003d00"
+    }
+
+    $wheat = {
+      machine_color: "#7b297d"
+      dir_color: "#e87888"
+      git_color: "#eae8e5"
+      git_diff_color: "#eec48b"
+      font_color: "#2b0549"
+    }
+
+    $royal = {
+      machine_color: "#57898a"
+      dir_color: "#b3b89a"
+      git_color: "#ccae66"
+      git_diff_color: "#cb9362"
+      font_color: "#495049"
+    }
+
+    $blackberry = {
+      machine_color: "#6e819e"
+      dir_color: "#d0aebc"
+      git_color: "#508b00"
+      git_diff_color: "#f6f4f5"
+      font_color: "#213451"
+    }
+
+    colorscheme: $default
+
+    ]
 
   def initialize
-    @clock = begin CONFIG.as_s("clock") rescue "off" end
-    @powerline = begin CONFIG.as_s("powerline") rescue "off" end
-    @floating_prompt = begin CONFIG.as_s("floating_prompt") rescue "off" end
-    @git_status = begin CONFIG.as_s("git_status") rescue "off" end
-    @pl_style = begin CONFIG.as_s("pl_style") rescue "sharp" end
-    @help_line = begin CONFIG.as_s("help_line") rescue "off" end
-    @help_tip = begin CONFIG.as_s("help_tip") rescue "off" end
-    @hist_length = begin CONFIG.as_i("hist_length") rescue -1 end
+    @clock = begin CONFIG.as_s("clock") rescue setProperty("clock", "on", true).to_s end
+    @powerline = begin CONFIG.as_s("powerline") rescue setProperty("powerline", "off", true).to_s end
+    @floating_prompt = begin CONFIG.as_s("floating_prompt") rescue setProperty("floating_prompt", "off", true).to_s end
+    @git_status = begin CONFIG.as_s("git_status") rescue setProperty("git_status", "left", true).to_s end
+    @pl_style = begin CONFIG.as_s("pl_style") rescue setProperty("pl_style", "sharp", true).to_s end
+    @help_line = begin CONFIG.as_s("help_line") rescue setProperty("help_line", "on", true).to_s end
+    @help_tip = begin CONFIG.as_s("help_tip") rescue setProperty("help_tip", "on", true).to_s end
+    @hist_length = begin CONFIG.as_i("hist_length") rescue setProperty("hist_length", 3000, true).to_s.to_i end
 
     @machine_color = Colorize::ColorRGB.new(getColor("machine_color")[0], getColor("machine_color")[1], getColor("machine_color")[2])
     @dir_color = Colorize::ColorRGB.new(getColor("dir_color")[0], getColor("dir_color")[1], getColor("dir_color")[2])
@@ -169,21 +207,25 @@ class ConfigManager
     "Nil"
   end
 
-  def setProperty(key : String, value)
+  def setProperty(key : String, value, re : Bool = false)
     value = begin value.to_i rescue value.to_s end
     xd = ""
     config_array = File.read_lines(CONFIG_PATH)
     regex = Regex.new(key + ":")
     index = config_array.index { |i| i =~ regex}
     unless index.nil?
-      if value.class == String
+      if key == "colorscheme"
+        config_array[index] = %[    #{key}: $#{value}]
+      elsif value.class == String
         config_array[index] = %[    #{key}: "#{value}"]
       else
         config_array[index] = %[    #{key}: #{value}]
       end
       puts "Set #{key} (at line #{index + 1}) to #{value}."
     else
-      if value.class == String
+      if key == "colorscheme"
+        config_array << "" << %[    #{key}: $#{value}]
+      elsif value.class == String
         config_array << "" << %[    #{key}: "#{value}"]
       else
         config_array << "" << %[    #{key}: #{value}]
@@ -194,6 +236,7 @@ class ConfigManager
       config_array.each { |e| str = str << e << "\n"}
     end
     File.write(CONFIG_PATH, xd)
+    return value if re
   end
 
   def getClock
@@ -230,7 +273,7 @@ class ConfigManager
 
   def getColor(color : String)
     hex = begin
-      CONFIG.as_h("colors")[color].to_s.downcase
+      CONFIG.as_h("colorscheme")[color].to_s.downcase
     rescue
       puts %[Couldn't find color "#{color}" in the config file. Using black (#000000) instead. Edit the config file or regenerate it to fix the issue.]
       "#000000"

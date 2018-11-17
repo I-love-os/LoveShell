@@ -18,8 +18,8 @@ class Wizard
         args << "" << ""
       end
       if input == "exit"
-        puts "Because of how LoveShell manages it's config,\
-         you need to restart it for the changes to take effect." if @changes == true
+        puts "Because of how LoveShell manages it's config, \
+        you need to restart it for the changes to take effect." if @changes == true
         break
       end
       parse(args[0].to_s, args[1].to_s, args[2])
@@ -42,6 +42,8 @@ class Wizard
     when "SET", "SAVE", "WRITE"
       if key == ""
         puts "Set what?"
+      elsif key == "color" || key == "colors" || key == "machine_color" || key == "dir_color" || key == "git_color" || key == "git_diff_color" || key == "font_color" && key != "colorscheme"
+        puts "Changing colors from this prompt is not supported. Use our dedicated app to do that, or just change the color scheme."
       elsif value == ""
         puts "Set #{key} to what?"
       else

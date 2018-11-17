@@ -132,11 +132,11 @@ module LoveShell
     end
 
     if path
-      path = path.sub("~", "/home/#{Process.user}")
+      path = path.sub("~", "#{ENV["HOME"]}")
       Dir["#{path}*"].each do |suggestion|
         base = File.basename(suggestion)
         suggestion += '/' if Dir.exists? suggestion
-        completions << Fancyline::Completion.new(range, suggestion.sub("/home/#{Process.user}", "~"), base)
+        completions << Fancyline::Completion.new(range, suggestion.sub("#{ENV["HOME"]}", "~"), base)
       end
     end
 
@@ -206,7 +206,7 @@ module LoveShell
 
       if args[0] == "cd"
         begin
-          Dir.cd(args[1].sub("~", "/home/#{Process.user}"))
+          Dir.cd(args[1].sub("~", "#{ENV["HOME"]}"))
         rescue exception
           puts exception
         end

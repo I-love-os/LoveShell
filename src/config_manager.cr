@@ -14,9 +14,9 @@ class ConfigManager
   @color_scheme : String
   @hist_length : Int32
 
-  CONFIG_PATH   = "/home/#{Process.user}/.config/Love/shell.conf"
-  SCHEMES_PATH   = "/home/#{Process.user}/.config/Love/schemes.conf"
-  CONFIG_FOLDER = "/home/#{Process.user}/.config/Love/"
+  CONFIG_PATH   = "#{ENV["HOME"]}/.config/Love/shell.conf"
+  SCHEMES_PATH   = "#{ENV["HOME"]}/.config/Love/schemes.conf"
+  CONFIG_FOLDER = "#{ENV["HOME"]}/.config/Love/"
 
   if !File.directory?(CONFIG_FOLDER)
     puts "No config directory found. Creating #{CONFIG_FOLDER}..."

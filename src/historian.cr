@@ -1,6 +1,6 @@
 class Historian
 
-  HISTORY_PATH = "/home/#{Process.user}/.hist.love"
+  HISTORY_PATH = "#{ENV["HOME"]}/.hist.love"
   HIST_LENGTH = LoveShell::CONFIG.getHistLength
   @@position = -1
   @@savedLine = ""

@@ -148,7 +148,7 @@ class Prompt
             #{"@".colorize.fore(FONT_COLOR).back(MACHINE_COLOR)}\
             #{System.hostname.colorize.fore(FONT_COLOR).back(MACHINE_COLOR)}\
             #{RIGHT_SYMBOL.colorize.fore(MACHINE_COLOR).back(DIR_COLOR)}\
-            #{Dir.current.sub("/home/#{Process.user}", "~").colorize.fore(FONT_COLOR).back(DIR_COLOR)}\
+            #{Dir.current.sub("#{ENV["HOME"]}", "~").colorize.fore(FONT_COLOR).back(DIR_COLOR)}\
             #{GIT_STATUS == "left" && @git_dir == true ? RIGHT_SYMBOL.colorize.fore(DIR_COLOR).back(@git_color) : RIGHT_SYMBOL.colorize(DIR_COLOR)}\
             #{GIT_STATUS == "left" ? "#{git}" : ""}#{PROMPT_SYMBOL.colorize(MACHINE_COLOR)} ".to_s
     else
@@ -158,7 +158,7 @@ class Prompt
             #{"@".colorize(MACHINE_COLOR)}\
             #{System.hostname.colorize(DIR_COLOR)}\
             #{"] ".colorize(MACHINE_COLOR)}\
-            #{Dir.current.sub("/home/#{Process.user}", "~").colorize.mode(:bold)}\
+            #{Dir.current.sub("#{ENV["HOME"]}", "~").colorize.mode(:bold)}\
             #{GIT_STATUS == "left" ? " #{git}" : ""}\
             #{" ->".colorize(MACHINE_COLOR)} ".to_s
     end

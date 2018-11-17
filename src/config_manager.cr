@@ -169,6 +169,28 @@ class ConfigManager
     "Nil"
   end
 
+  def setProperty(key : String, value)
+    value = begin value.to_i rescue value.to_s end
+    xd = ""
+    config_array = File.read_lines(CONFIG_PATH)
+    regex = Regex.new(key + ":")
+    index = config_array.index { |i| i =~ regex}
+    unless index.nil?
+      if value.class == String
+        config_array[index] = %[    #{key}: "#{value}"]
+      else
+        config_array[index] = %[    #{key}: #{value}]
+      end
+      xd = String.build do |str|
+        config_array.each { |e| str = str << e << "\n"}
+      end
+      File.write(CONFIG_PATH, xd)
+      puts "Set #{key} (at line #{index + 1}) to #{value}."
+    else
+      puts "Key #{key} not found in the config file."
+    end
+  end
+
   def getClock
     @clock
   end

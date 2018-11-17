@@ -181,14 +181,19 @@ class ConfigManager
       else
         config_array[index] = %[    #{key}: #{value}]
       end
-      xd = String.build do |str|
-        config_array.each { |e| str = str << e << "\n"}
-      end
-      File.write(CONFIG_PATH, xd)
       puts "Set #{key} (at line #{index + 1}) to #{value}."
     else
-      puts "Key #{key} not found in the config file."
+      if value.class == String
+        config_array << "" << %[    #{key}: "#{value}"]
+      else
+        config_array << "" << %[    #{key}: #{value}]
+      end
+      puts "Key #{key} not found in the config file. Adding it at line #{config_array.size} and setting it to #{value}."
     end
+    xd = String.build do |str|
+      config_array.each { |e| str = str << e << "\n"}
+    end
+    File.write(CONFIG_PATH, xd)
   end
 
   def getClock

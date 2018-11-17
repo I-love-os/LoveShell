@@ -27,17 +27,27 @@ class Wizard
   end
 
   def parse(command : String, key : String, value)
+    key = key.to_s.downcase
     case command.to_s.upcase
     when "REGEN", "REGENERATE", "RESET"
-      @config.regenConfig
-      @changes = true
+      if key == ""
+        puts "Regenerate what?"
+      elsif key == "config" || key == "configuration" || key == "settings"
+        @config.regenConfig
+        @changes = true
+      elsif key == "colors" || key == "color" || key == "schemes" || key == "colorschemes"
+        @config.regenSchemes
+        @changes = true
+      else
+        puts "You can't regenerate that!"
+      end
     when "HELP"
       puts "not gonna help you lol"
     when "GET", "LOAD", "READ"
       if key == ""
         puts "Get what?"
       else
-        puts @config.getProperty(key.to_s.downcase)
+        puts @config.getProperty(key)
       end
     when "SET", "SAVE", "WRITE"
       if key == ""
@@ -47,7 +57,7 @@ class Wizard
       elsif value == ""
         puts "Set #{key} to what?"
       else
-        @config.setProperty(key.to_s.downcase, value)
+        @config.setProperty(key, value)
         @changes = true
       end
     else

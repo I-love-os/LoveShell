@@ -11,23 +11,32 @@ class ConfigManager
   @pl_style : String
   @help_line : String
   @help_tip : String
+  @color_scheme : String
   @hist_length : Int32
 
-  CONFIG_PATH   = "/home/#{Process.user}/.config/LoveShell/LoveShell.conf"
-  CONFIG_FOLDER = "/home/#{Process.user}/.config/LoveShell/"
+  CONFIG_PATH   = "/home/#{Process.user}/.config/Love/shell.conf"
+  SCHEMES_PATH   = "/home/#{Process.user}/.config/Love/schemes.conf"
+  CONFIG_FOLDER = "/home/#{Process.user}/.config/Love/"
+
+  if !File.directory?(CONFIG_FOLDER)
+    puts "No config directory found. Creating #{CONFIG_FOLDER}..."
+    FileUtils.mkdir(CONFIG_FOLDER)
+  end
 
   if !File.exists?(CONFIG_PATH)
     puts "No configuration file found. Creating a new one..."
-    if !File.directory?(CONFIG_FOLDER)
-      puts "No config directory found. Creating #{CONFIG_FOLDER}..."
-      FileUtils.mkdir(CONFIG_FOLDER)
-    end
-    file = File.new(CONFIG_PATH, "w+")
+    File.write(CONFIG_PATH, DEFAULT_CONFIG)
     puts "Populating it with default settings..."
-    file.puts DEFAULT_CONFIG
-    file.close
   end
+
+  if !File.exists?(SCHEMES_PATH)
+    puts "No color scheme file found. Creating a new one..."
+    File.write(SCHEMES_PATH, DEFAULT_SCHEMES)
+    puts "Populating it with default color schemes..."
+  end
+
   CONFIG = Config.file(CONFIG_PATH)
+  SCHEMES = Config.file(SCHEMES_PATH)
 
   DEFAULT_CONFIG =
     %[# LOVESHELL CONFIGURATION FILE
@@ -79,9 +88,15 @@ class ConfigManager
 
     hist_length: 3000
 
-    # Custom colors in hex RGB values, for example: "#FF0000" is red
+    # Color scheme - you can change the color scheme LoveShell uses.
+    # List of available color schemes is available in ~/.config/Love/schemes.conf
 
-    $default = {
+    color_scheme: "default"]
+
+  DEFAULT_SCHEMES =
+    %[# Custom colors in hex RGB values, for example: "#FF0000" is red
+
+    default: {
       machine_color: "#E06C75"
       dir_color: "#D19A66"
       git_color: "#98C379"
@@ -89,7 +104,7 @@ class ConfigManager
       font_color: "#000000"
     }
 
-    $sakura = {
+    sakura: {
       machine_color: "#FE87AC"
       dir_color: "#FECBCF"
       git_color: "#CFE4DD"
@@ -97,7 +112,7 @@ class ConfigManager
       font_color: "#5E556A"
     }
 
-    $cupcake = {
+    cupcake: {
       machine_color: "#f2e2cf"
       dir_color: "#fa556b"
       git_color: "#907d6f"
@@ -105,7 +120,7 @@ class ConfigManager
       font_color: "#810c13"
     }
 
-    $lime = {
+    lime: {
       machine_color: "#84b000"
       dir_color: "#ebe7c3"
       git_color: "#a8aec1"
@@ -113,7 +128,7 @@ class ConfigManager
       font_color: "#003d00"
     }
 
-    $wheat = {
+    wheat: {
       machine_color: "#7b297d"
       dir_color: "#e87888"
       git_color: "#eae8e5"
@@ -121,7 +136,7 @@ class ConfigManager
       font_color: "#2b0549"
     }
 
-    $royal = {
+    royal: {
       machine_color: "#57898a"
       dir_color: "#b3b89a"
       git_color: "#ccae66"
@@ -129,17 +144,13 @@ class ConfigManager
       font_color: "#495049"
     }
 
-    $blackberry = {
+    blueberry: {
       machine_color: "#6e819e"
       dir_color: "#d0aebc"
       git_color: "#508b00"
       git_diff_color: "#f6f4f5"
       font_color: "#213451"
-    }
-
-    colorscheme: $default
-
-    ]
+    }]
 
   def initialize
     @clock = begin CONFIG.as_s("clock") rescue setProperty("clock", "on", true).to_s end
@@ -149,32 +160,56 @@ class ConfigManager
     @pl_style = begin CONFIG.as_s("pl_style") rescue setProperty("pl_style", "sharp", true).to_s end
     @help_line = begin CONFIG.as_s("help_line") rescue setProperty("help_line", "on", true).to_s end
     @help_tip = begin CONFIG.as_s("help_tip") rescue setProperty("help_tip", "on", true).to_s end
+    @color_scheme = begin CONFIG.as_s("color_scheme") rescue setProperty("color_scheme", "default", true).to_s end
     @hist_length = begin CONFIG.as_i("hist_length") rescue setProperty("hist_length", 3000, true).to_s.to_i end
 
-    @machine_color = Colorize::ColorRGB.new(getColor("machine_color")[0], getColor("machine_color")[1], getColor("machine_color")[2])
-    @dir_color = Colorize::ColorRGB.new(getColor("dir_color")[0], getColor("dir_color")[1], getColor("dir_color")[2])
-    @git_color = Colorize::ColorRGB.new(getColor("git_color")[0], getColor("git_color")[1], getColor("git_color")[2])
-    @git_diff_color = Colorize::ColorRGB.new(getColor("git_diff_color")[0], getColor("git_diff_color")[1], getColor("git_diff_color")[2])
-    @font_color = Colorize::ColorRGB.new(getColor("font_color")[0], getColor("font_color")[1], getColor("font_color")[2])
+    machine_rgb = getColor("machine_color")
+    dir_rgb = getColor("dir_color")
+    git_rgb = getColor("git_color")
+    git_diff_rgb = getColor("git_diff_color")
+    font_rgb =getColor("font_color")
+
+    @machine_color = Colorize::ColorRGB.new(machine_rgb[0], machine_rgb[1], machine_rgb[2])
+    @dir_color = Colorize::ColorRGB.new(dir_rgb[0], dir_rgb[1], dir_rgb[2])
+    @git_color = Colorize::ColorRGB.new(git_rgb[0], git_rgb[1], git_rgb[2])
+    @git_diff_color = Colorize::ColorRGB.new(git_diff_rgb[0], git_diff_rgb[1], git_diff_rgb[2])
+    @font_color = Colorize::ColorRGB.new(font_rgb[0], font_rgb[1], font_rgb[2])
   end
 
   def regenConfig
-    puts "Are you sure you want to regenerate the config file? All your LoveShell settings will be reset. (Y/N): "
+    puts "Are you sure you want to regenerate the config file? All your LoveShell settings will be reset, but a backup will be made. (Y/N): "
     while true
       ans = gets.to_s.chomp.upcase
       case ans
       when "Y"
         puts "Backing up your current config at #{CONFIG_PATH}.old..."
         FileUtils.mv(CONFIG_PATH, "#{CONFIG_PATH}.old")
-        file = File.new(CONFIG_PATH, "w+")
-        file.puts DEFAULT_CONFIG
-        file.close
+        File.write(CONFIG_PATH, DEFAULT_CONFIG)
         break
       when "N"
-        puts "not gonna do it xd"
+        puts "Regen cancelled."
         break
       else
-        puts "y or n pls"
+        puts "Answer by typing 'Y' or 'N'."
+      end
+    end
+  end
+
+  def regenSchemes
+    puts "Are you sure you want to regenerate the color scheme file? All your custom color schemes will be deleted, but a backup will be made. (Y/N): "
+    while true
+      ans = gets.to_s.chomp.upcase
+      case ans
+      when "Y"
+        puts "Backing up your current color scheme file at #{SCHEMES_PATH}.old..."
+        FileUtils.mv(SCHEMES_PATH, "#{SCHEMES_PATH}.old")
+        File.write(SCHEMES_PATH, DEFAULT_SCHEMES)
+        break
+      when "N"
+        puts "Regen cancelled."
+        break
+      else
+        puts "Answer by typing 'Y' or 'N'."
       end
     end
   end
@@ -214,18 +249,14 @@ class ConfigManager
     regex = Regex.new(key + ":")
     index = config_array.index { |i| i =~ regex}
     unless index.nil?
-      if key == "colorscheme"
-        config_array[index] = %[    #{key}: $#{value}]
-      elsif value.class == String
+      if value.class == String
         config_array[index] = %[    #{key}: "#{value}"]
       else
         config_array[index] = %[    #{key}: #{value}]
       end
       puts "Set #{key} (at line #{index + 1}) to #{value}."
     else
-      if key == "colorscheme"
-        config_array << "" << %[    #{key}: $#{value}]
-      elsif value.class == String
+      if value.class == String
         config_array << "" << %[    #{key}: "#{value}"]
       else
         config_array << "" << %[    #{key}: #{value}]
@@ -271,11 +302,15 @@ class ConfigManager
     @help_tip
   end
 
+  def getColorScheme
+    @color_scheme
+  end
+
   def getColor(color : String)
     hex = begin
-      CONFIG.as_h("colorscheme")[color].to_s.downcase
+      SCHEMES.as_h(@color_scheme)[color].to_s.downcase
     rescue
-      puts %[Couldn't find color "#{color}" in the config file. Using black (#000000) instead. Edit the config file or regenerate it to fix the issue.]
+      puts %[Couldn't find color "#{color}" in the "#{@color_scheme}" color scheme. Either there's no such color scheme, or the color is not defined in that color scheme. Using black (#000000) instead.]
       "#000000"
     end
     r = hex.byte_slice(1, 2).to_u8(16)

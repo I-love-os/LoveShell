@@ -33,30 +33,36 @@ class Historian
   end
 
   def getEntryUp : String
+    starting_pos = @@position
     histLength = File.read_lines(HISTORY_PATH).size - 1
     histLog = File.read_lines(HISTORY_PATH).reverse
+
     unless @@savedLine == ""
-      while true
-        @@position += 1
-        out = histLog[@@position].to_s
-        break if out[0..@@savedLine.size - 1] == @@savedLine
-        if getLength == getPosition + 1
-          @@position -= 1
-          break
+      unless histLog.find{ |i| i[0..@@savedLine.size - 1] == @@savedLine }.nil?
+        while true
+          @@position += 1
+          line = histLog[@@position].to_s
+          break if line[0..@@savedLine.size - 1] == @@savedLine && line[0..3] != "#<3#"
+          if histLength == @@position + 1
+            @@position -= 1
+            break
+          end
         end
+      else
+        line = @@savedLine
       end
     else
       while true
         @@position += 1
-        out = histLog[@@position].to_s
-        break if out[0..3] != "#<3#"
+        line = histLog[@@position].to_s
+        break if line[0..3] != "#<3#"
         if getLength == getPosition + 1
           @@position -= 1
           break
         end
       end
     end
-    out
+    line
   end
 
   def getEntryDown : String
@@ -66,36 +72,37 @@ class Historian
         @@position -= 1
         if @@position < 0
           @@position = -1
-          out = @@savedLine
+          line = @@savedLine
+          clearSavedLine
           break
         end
-        out = histLog[@@position].to_s
-        break if out[0..@@savedLine.size - 1] == @@savedLine
+        line = histLog[@@position].to_s
+        break if line[0..@@savedLine.size - 1] == @@savedLine
       end
-      out
+      line
     else
       while true
         @@position -= 1
         if @@position < 0
           @@position = -1
-          out = ""
+          line = ""
           break
         end
-        out = histLog[@@position].to_s
-        break if out[0..3] != "#<3#"
+        line = histLog[@@position].to_s
+        break if line[0..3] != "#<3#"
       end
-      out
+      line
     end
   end
 
   def getCurrentEntry : String
     if @@position == -1
-      out = ""
+      line = ""
     else
       histLog = File.read_lines(HISTORY_PATH).reverse
-      out = histLog[@@position].to_s
+      line = histLog[@@position].to_s
     end
-    out
+    line
   end
 
   def getLength : Int

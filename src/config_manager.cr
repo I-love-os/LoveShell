@@ -11,12 +11,17 @@ class ConfigManager
   @pl_style : String
   @help_line : String
   @help_tip : String
+  @legacy_symbol : String
   @color_scheme : String
   @hist_length : Int32
 
   CONFIG_PATH   = "#{ENV["HOME"]}/.config/Love/shell.conf"
-  SCHEMES_PATH   = "#{ENV["HOME"]}/.config/Love/schemes.conf"
+  SCHEMES_PATH  = "#{ENV["HOME"]}/.config/Love/schemes.conf"
   CONFIG_FOLDER = "#{ENV["HOME"]}/.config/Love/"
+
+  if begin ENV["COLORTERM"] rescue "" end != "truecolor"
+    puts "The terminal you're using doesn't support true color. The colors may appear weird."
+  end
 
   if !File.directory?(CONFIG_FOLDER)
     puts "No config directory found. Creating #{CONFIG_FOLDER}..."
@@ -82,6 +87,11 @@ class ConfigManager
     # Available values are "off", or "on".
 
     help_tip: "on"
+
+    # Legacy symbol - Should the traditional prompt symbol ($ or #) be visible at the end of the prompt.
+    # Available values are "off" or "on".
+
+    legacy_symbol: "off"
 
     # History Length - dictates the length of you history file (located in ~/hist.love)
     # Available values are: any integer.
@@ -160,6 +170,7 @@ class ConfigManager
     @pl_style = begin CONFIG.as_s("pl_style") rescue setProperty("pl_style", "sharp", true).to_s end
     @help_line = begin CONFIG.as_s("help_line") rescue setProperty("help_line", "on", true).to_s end
     @help_tip = begin CONFIG.as_s("help_tip") rescue setProperty("help_tip", "on", true).to_s end
+    @legacy_symbol = begin CONFIG.as_s("legacy_symbol") rescue setProperty("legacy_symbol", "off", true).to_s end
     @color_scheme = begin CONFIG.as_s("color_scheme") rescue setProperty("color_scheme", "default", true).to_s end
     @hist_length = begin CONFIG.as_i("hist_length") rescue setProperty("hist_length", 3000, true).to_s.to_i end
 
@@ -174,6 +185,11 @@ class ConfigManager
     @git_color = Colorize::ColorRGB.new(git_rgb[0], git_rgb[1], git_rgb[2])
     @git_diff_color = Colorize::ColorRGB.new(git_diff_rgb[0], git_diff_rgb[1], git_diff_rgb[2])
     @font_color = Colorize::ColorRGB.new(font_rgb[0], font_rgb[1], font_rgb[2])
+
+    if ENV["TERM"] == "linux" && @powerline == "on"
+      puts "You're using a tty terminal, forcing powerline off."
+      @powerline = "off"
+    end
   end
 
   def regenConfig
@@ -300,6 +316,10 @@ class ConfigManager
 
   def getHelpTip
     @help_tip
+  end
+
+  def getLegacySymbol
+    @legacy_symbol
   end
 
   def getColorScheme

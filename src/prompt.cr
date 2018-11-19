@@ -75,6 +75,18 @@ class Prompt
     end
   end
 
+  LEGACY_SYMBOL = begin
+    if @@config.getLegacySymbol == "on"
+      if Process.user.to_s == "root"
+        "#"
+      else
+        "$"
+      end
+    else
+      ""
+    end
+  end
+
   def gitCheck
     if File.exists? Dir.current + "/.git/HEAD"
       @git_dir = true
@@ -150,7 +162,7 @@ class Prompt
             #{RIGHT_SYMBOL.colorize.fore(MACHINE_COLOR).back(DIR_COLOR)}\
             #{Dir.current.sub("#{ENV["HOME"]}", "~").colorize.fore(FONT_COLOR).back(DIR_COLOR)}\
             #{GIT_STATUS == "left" && @git_dir == true ? RIGHT_SYMBOL.colorize.fore(DIR_COLOR).back(@git_color) : RIGHT_SYMBOL.colorize(DIR_COLOR)}\
-            #{GIT_STATUS == "left" ? "#{git}" : ""}#{PROMPT_SYMBOL.colorize(MACHINE_COLOR)} ".to_s
+            #{GIT_STATUS == "left" ? "#{git}" : ""}#{"#{LEGACY_SYMBOL}#{PROMPT_SYMBOL}".colorize(MACHINE_COLOR)} ".to_s
     else
       out = "#{prod_prefix}\
             #{"[".colorize(MACHINE_COLOR)}\
@@ -160,7 +172,7 @@ class Prompt
             #{"] ".colorize(MACHINE_COLOR)}\
             #{Dir.current.sub("#{ENV["HOME"]}", "~").colorize.mode(:bold)}\
             #{GIT_STATUS == "left" ? " #{git}" : ""}\
-            #{" ->".colorize(MACHINE_COLOR)} ".to_s
+            #{" #{LEGACY_SYMBOL}->".colorize(MACHINE_COLOR)} ".to_s
     end
     out
   end

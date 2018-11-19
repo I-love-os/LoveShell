@@ -186,8 +186,10 @@ module LoveShell
   end
 
   fancy.actions.set Fancyline::Key::Control::Down do |ctx|
-    ctx.editor.line = historian.getEntryDown
-    ctx.editor.move_cursor(ctx.editor.line.size)
+    unless historian.getPosition == -1
+      ctx.editor.line = historian.getEntryDown
+      ctx.editor.move_cursor(ctx.editor.line.size)
+    end
   end
 
   # THE MAIN LOOP

@@ -15,12 +15,24 @@ class ConfigManager
   @color_scheme : String
   @hist_length : Int32
 
+  @machine_color : (Colorize::ColorRGB | Symbol)
+  @dir_color : (Colorize::ColorRGB | Symbol)
+  @git_color : (Colorize::ColorRGB | Symbol)
+  @git_diff_color : (Colorize::ColorRGB | Symbol)
+  @font_color : (Colorize::ColorRGB | Symbol)
+
+
   CONFIG_PATH   = "#{ENV["HOME"]}/.config/Love/shell.conf"
   SCHEMES_PATH  = "#{ENV["HOME"]}/.config/Love/schemes.conf"
   CONFIG_FOLDER = "#{ENV["HOME"]}/.config/Love/"
+  NO_TRUECOLOR  = begin
+    begin ENV["COLORTERM"] rescue "" end != "truecolor"
+  end
 
-  if begin ENV["COLORTERM"] rescue "" end != "truecolor"
-    puts "The terminal you're using doesn't support true color. The colors may appear weird."
+
+
+  if NO_TRUECOLOR
+    puts "The terminal you're using doesn't support true color. Forcing the no_truecolor color scheme."
   end
 
   if !File.directory?(CONFIG_FOLDER)
@@ -160,6 +172,17 @@ class ConfigManager
       git_color: "#508b00"
       git_diff_color: "#f6f4f5"
       font_color: "#213451"
+    }
+
+    # If your terminal doesn't support true color, LoveShell will use these
+    # so it can still offer syntax highlighting feaures.
+
+    no_truecolor: {
+      machine_color: "red"
+      dir_color: "yellow"
+      git_color: "green"
+      git_diff_color: "light-yellow"
+      font_color: "black"
     }]
 
   def initialize
@@ -180,11 +203,11 @@ class ConfigManager
     git_diff_rgb = getColor("git_diff_color")
     font_rgb =getColor("font_color")
 
-    @machine_color = Colorize::ColorRGB.new(machine_rgb[0], machine_rgb[1], machine_rgb[2])
-    @dir_color = Colorize::ColorRGB.new(dir_rgb[0], dir_rgb[1], dir_rgb[2])
-    @git_color = Colorize::ColorRGB.new(git_rgb[0], git_rgb[1], git_rgb[2])
-    @git_diff_color = Colorize::ColorRGB.new(git_diff_rgb[0], git_diff_rgb[1], git_diff_rgb[2])
-    @font_color = Colorize::ColorRGB.new(font_rgb[0], font_rgb[1], font_rgb[2])
+    @machine_color = NO_TRUECOLOR ? getNoTrueColor("machine_color") : Colorize::ColorRGB.new(machine_rgb[0], machine_rgb[1], machine_rgb[2])
+    @dir_color = NO_TRUECOLOR ? getNoTrueColor("dir_color") : Colorize::ColorRGB.new(dir_rgb[0], dir_rgb[1], dir_rgb[2])
+    @git_color = NO_TRUECOLOR ? getNoTrueColor("git_color") : Colorize::ColorRGB.new(git_rgb[0], git_rgb[1], git_rgb[2])
+    @git_diff_color = NO_TRUECOLOR ? getNoTrueColor("git_diff_color") : Colorize::ColorRGB.new(git_diff_rgb[0], git_diff_rgb[1], git_diff_rgb[2])
+    @font_color = NO_TRUECOLOR ? getNoTrueColor("font_color") : Colorize::ColorRGB.new(font_rgb[0], font_rgb[1], font_rgb[2])
 
     if ENV["TERM"] == "linux" && @powerline == "on"
       puts "You're using a tty terminal, forcing powerline off."
@@ -337,6 +360,51 @@ class ConfigManager
     g = hex.byte_slice(3, 2).to_u8(16)
     b = hex.byte_slice(5, 2).to_u8(16)
     [r, g, b]
+  end
+
+  def getNoTrueColor(color : String)
+    begin
+      x = SCHEMES.as_h("no_truecolor")[color].to_s.downcase
+      case x
+      when "black"
+        :black
+      when "white"
+        :white
+      when "red"
+        :red
+      when "green"
+        :green
+      when "yellow"
+        :yellow
+      when "blue"
+        :blue
+      when "magenta"
+        :magenta
+      when "cyan", "aqua"
+        :cyan
+      when "light-gray", "light-grey"
+        :light_grey
+      when "dark-gray", "dark-grey"
+        :dark_grey
+      when "light-red"
+        :light_red
+      when "light-green"
+        :light_green
+      when "light-yellow"
+        :light_yellow
+      when "light-blue"
+        :light_blue
+      when "light-magenta"
+        :light_magenta
+      when "light-cyan", "light-aqua"
+        :light_cyan
+      else
+        :black
+      end
+    rescue
+      puts %[Couldn't find color "#{color}" in the alternative non-truecolor color scheme. That means there's probably an error in the schemes file. Using "black" instead.]
+      :black
+    end
   end
 
   def getMachineColor

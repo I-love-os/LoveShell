@@ -26,7 +26,7 @@ module LoveShell
   pause = false
   settings = false
 
-  aliases = {"ls" => "ls --color=auto", "lsa" => "ls --color=auto -a", "grep" => "grep --color"} of String => String
+  aliases = {"ls" => "ls --color=auto", "lsa" => "ls --color=auto -a -l", "grep" => "grep --color"} of String => String
 
   prompt = Prompt.new
   fancy = Fancyline.new

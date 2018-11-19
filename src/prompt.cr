@@ -16,7 +16,7 @@ class Prompt
   GIT_DIFF_COLOR  = @@config.getGitDiffColor
   FONT_COLOR      = @@config.getFontColor
   @git_dir = false
-  @git_color : Colorize::ColorRGB = GIT_COLOR
+  @git_color : (Colorize::ColorRGB | Symbol) = GIT_COLOR
 
   LEFT_SYMBOL = begin
     case PL_STYLE

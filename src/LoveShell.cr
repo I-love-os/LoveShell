@@ -8,6 +8,7 @@ require "./historian"
 require "./commands"
 require "./wizard"
 require "./config_manager"
+require "./helper"
 
 def get_command(ctx)
   line = ctx.editor.line
@@ -33,6 +34,7 @@ module LoveShell
   historian = Historian.new
   commands = Commands.new
   wizard = Wizard.new
+  helper = Helper.new
   CONFIG = ConfigManager.new
 
   COMMAND_COLOR = CONFIG.getMachineColor
@@ -238,6 +240,8 @@ module LoveShell
         system(args.join " ")
       elsif args[0] == "SETTINGS" || args[0] == "CONFIG" || args[0] == "WIZARD"
         wizard.start
+      elsif args[0] == "HELP"
+        helper.getHelp(args[1].downcase)
       elsif !commands.exists? input
         puts "LoveShell".colorize(ARG_COLOR).to_s +
              ":".colorize(ARG_COLOR).mode(:bold).to_s +

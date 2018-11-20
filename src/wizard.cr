@@ -1,10 +1,12 @@
 require "fancyline"
 require "./prompt"
 require "./config_manager"
+require "./helper"
 
 class Wizard
   @fancy = Fancyline.new
   @prompt = Prompt.new
+  @helper = Helper.new
   @config = LoveShell::CONFIG
 
   @changes = false
@@ -42,10 +44,20 @@ class Wizard
         puts "You can't regenerate that!"
       end
     when "HELP"
-      puts "not gonna help you lol"
+      if key == ""
+        puts "Help you with what?"
+      else
+        @helper.getHelp(key)
+      end
     when "GET", "LOAD", "READ"
       if key == ""
         puts "Get what?"
+      elsif key == "help"
+        if value.to_s == ""
+          puts "Help you with what?"
+        else
+          @helper.getHelp(value.to_s)
+        end
       else
         puts @config.getProperty(key)
       end

@@ -74,7 +74,7 @@ module LoveShell
   # COLORING INPUT
 
   fancy.display.add do |ctx, line, yielder|
-    line = line.gsub(/^[A-Za-z0-9-\--_]*/, &.colorize(COMMAND_COLOR).mode(:bold))
+    line = line.gsub(/^[A-Za-z0-9-\--_\+]*/, &.colorize(COMMAND_COLOR).mode(:bold))
     line = line.gsub(/(\|\s*)([A-Za-z0-9-]*)/) do
       "#{$1}#{$2.colorize(COMMAND_COLOR).mode(:bold)}"
     end

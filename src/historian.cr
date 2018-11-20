@@ -38,7 +38,7 @@ class Historian
     histLog = File.read_lines(HISTORY_PATH).reverse
 
     unless @@savedLine == ""
-      unless histLog.find{ |i| i[0..@@savedLine.size - 1] == @@savedLine }.nil?
+      unless histLog[@@position + 1..histLog.size].find{ |i| i[0..@@savedLine.size - 1] == @@savedLine && i[0..3] != "#<3#"}.nil?
         while true
           @@position += 1
           line = histLog[@@position].to_s
@@ -77,7 +77,7 @@ class Historian
           break
         end
         line = histLog[@@position].to_s
-        break if line[0..@@savedLine.size - 1] == @@savedLine
+        break if line[0..@@savedLine.size - 1] == @@savedLine && line[0..3] != "#<3#"
       end
       line
     else

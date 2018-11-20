@@ -40,11 +40,12 @@ module LoveShell
   ARG_COLOR     = CONFIG.getGitColor
   HELP_LINE     = CONFIG.getHelpLine
   HELP_TIP      = CONFIG.getHelpTip
+  TRANSLATE     = CONFIG.getTranslate
 
   # ARGUMENT PARSING
 
   OptionParser.parse! do |parser|
-    parser.banner = "Shell made with <3"
+    parser.banner = "Shell made with <3\nUsage: LoveShell [arguments]"
     parser.on("-x BLOCK", "--execute BLOCK", "Executes the specified code block.") { |block| execute = true; execute_block = block }
     parser.on("-s", "--settings", "Launches the LoveShell Settings prompt.") { settings = true }
     parser.on("-p", "--pause", "(Usable with -x or -s) Shell doesn't exit after execution of the task finishes.") { pause = true }
@@ -94,7 +95,11 @@ module LoveShell
 
     if (command = get_command(ctx)) && help_line_enabled # Grab the command
       if (!command.includes? "\"") && (!command.includes? "\'") && (!command.includes? "\(") && (!command.includes? "\)") && (!command.includes? "&&&")  && (!command.includes? ";;")
-        help_line = `whatis #{command} 2> /dev/null`.lines.first?
+        if TRANSLATE == "on"
+          help_line = `whatis --locale=#{begin ENV["LANG"].to_s[0, 2] rescue "en" end} #{command} 2> /dev/null`.lines.first?
+        else
+          help_line = `whatis #{command} 2> /dev/null`.lines.first?
+        end
         if help_line
           words = help_line.to_s.split(" ")
           words.delete("")
@@ -153,7 +158,11 @@ module LoveShell
 
    fancy.actions.set Fancyline::Key::Control::CtrlH do |ctx|
     if command = get_command(ctx)
-      system("man #{command}")
+      if TRANSLATE == "on"
+        system("man --locale=#{begin ENV["LANG"].to_s[0, 2] rescue "en" end} #{command}")
+      else
+        system("man #{command}")
+      end
     end
    end
 

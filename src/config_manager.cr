@@ -26,9 +26,7 @@ class ConfigManager
   CONFIG_PATH   = "#{ENV["HOME"]}/.config/Love/shell.conf"
   SCHEMES_PATH  = "#{ENV["HOME"]}/.config/Love/schemes.conf"
   CONFIG_FOLDER = "#{ENV["HOME"]}/.config/Love/"
-  NO_TRUECOLOR  = begin
-    begin ENV["COLORTERM"] rescue "" end != "truecolor"
-  end
+  NO_TRUECOLOR  = begin !ENV["TERM"].includes?("256color") rescue false end
 
 
 

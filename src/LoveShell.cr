@@ -241,7 +241,11 @@ module LoveShell
       elsif args[0] == "SETTINGS" || args[0] == "CONFIG" || args[0] == "WIZARD"
         wizard.start
       elsif args[0] == "HELP"
-        helper.getHelp(args[1].downcase)
+        begin
+          helper.getHelp(args[1].downcase)
+        rescue
+          helper.getHelp("help")
+        end
       elsif !commands.exists? input
         puts "LoveShell".colorize(ARG_COLOR).to_s +
              ":".colorize(ARG_COLOR).mode(:bold).to_s +

@@ -37,7 +37,7 @@ class Wizard
       elsif key == "config" || key == "configuration" || key == "settings"
         @config.regenConfig
         @changes = true
-      elsif key == "colors" || key == "color" || key == "schemes" || key == "colorschemes"
+      elsif key == "colors" || key == "color" || key == "schemes" || key == "colorschemes" || key == "color_schemes"
         @config.regenSchemes
         @changes = true
       else
@@ -45,7 +45,7 @@ class Wizard
       end
     when "HELP"
       if key == ""
-        puts "Help you with what?"
+        @helper.getHelp("help")
       else
         @helper.getHelp(key)
       end
@@ -54,7 +54,7 @@ class Wizard
         puts "Get what?"
       elsif key == "help"
         if value.to_s == ""
-          puts "Help you with what?"
+          @helper.getHelp("help")
         else
           @helper.getHelp(value.to_s)
         end

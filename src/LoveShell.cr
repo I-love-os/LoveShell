@@ -140,10 +140,13 @@ module LoveShell
 
     if path
       path = path.sub("~", "#{ENV["HOME"]}")
+      if ctx.editor.line[arg_begin...arg_end].strip.includes? "./"
+        path = "." + path
+      end
       Dir["#{path}*"].each do |suggestion|
         base = File.basename(suggestion)
         suggestion += '/' if Dir.exists? suggestion
-        completions << Fancyline::Completion.new(range, suggestion.sub("#{ENV["HOME"]}", "~"), base)
+        completions << Fancyline::Completion.new(ctx.editor.line[arg_begin...arg_end].strip.includes?("./") ? arg_begin...arg_end : range, suggestion.sub("#{ENV["HOME"]}", "~"), base)
       end
     end
 

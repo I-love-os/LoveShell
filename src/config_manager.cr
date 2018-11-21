@@ -26,7 +26,7 @@ class ConfigManager
   CONFIG_PATH   = "#{ENV["HOME"]}/.config/Love/shell.conf"
   SCHEMES_PATH  = "#{ENV["HOME"]}/.config/Love/schemes.conf"
   CONFIG_FOLDER = "#{ENV["HOME"]}/.config/Love/"
-  NO_TRUECOLOR  = begin !ENV["TERM"].includes?("256color") rescue false end
+  NO_TRUECOLOR  = begin ((!ENV["TERM"].includes?("256color")) || (CONFIG.as_s("color_scheme") == "no_truecolor")) rescue false end
 
 
 
@@ -201,11 +201,19 @@ class ConfigManager
     @color_scheme = begin CONFIG.as_s("color_scheme") rescue setProperty("color_scheme", "default", true).to_s end
     @hist_length = begin CONFIG.as_i("hist_length") rescue setProperty("hist_length", 3000, true).to_s.to_i end
 
-    machine_rgb = getColor("machine_color")
-    dir_rgb = getColor("dir_color")
-    git_rgb = getColor("git_color")
-    git_diff_rgb = getColor("git_diff_color")
-    font_rgb =getColor("font_color")
+    begin
+      machine_rgb = getColor("machine_color")
+      dir_rgb = getColor("dir_color")
+      git_rgb = getColor("git_color")
+      git_diff_rgb = getColor("git_diff_color")
+      font_rgb = getColor("font_color")
+    rescue
+      machine_rgb = [0.to_u8, 0.to_u8, 0.to_u8]
+      dir_rgb = [0.to_u8, 0.to_u8, 0.to_u8]
+      git_rgb = [0.to_u8, 0.to_u8, 0.to_u8]
+      git_diff_rgb = [0.to_u8, 0.to_u8, 0.to_u8]
+      font_rgb =  [0.to_u8, 0.to_u8, 0.to_u8]
+    end
 
     @machine_color = NO_TRUECOLOR ? getNoTrueColor("machine_color") : Colorize::ColorRGB.new(machine_rgb[0], machine_rgb[1], machine_rgb[2])
     @dir_color = NO_TRUECOLOR ? getNoTrueColor("dir_color") : Colorize::ColorRGB.new(dir_rgb[0], dir_rgb[1], dir_rgb[2])

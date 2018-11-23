@@ -159,7 +159,7 @@ module LoveShell
     if command
       # puts "begin #{arg_begin} && end #{arg_end}"
       commands.grepCommands(command).uniq.each do |suggestion|
-        if arg_end < 2
+        if arg_end == 2
           completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], suggestion)
         else
           if getCmd[1]

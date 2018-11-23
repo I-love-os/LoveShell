@@ -132,9 +132,9 @@ module LoveShell
     arg_end = ctx.editor.line.index(' ', arg_begin + 1) || ctx.editor.line.size
     range = (arg_begin + 1)...arg_end
 
-    if (get_command(ctx) != ctx.editor.line[arg_begin...arg_end].strip) && ctx.editor.line[arg_begin...arg_end] != "" || {'/', '.'}.includes?(prev_char)
+    if (get_command(ctx) != ctx.editor.line[arg_begin...arg_end].strip) || ctx.editor.line[arg_begin...arg_end].strip.includes?("./")
       path = ctx.editor.line[range].strip
-    elsif ctx.editor.line[arg_begin...arg_end] != ""
+    elsif ctx.editor.line[arg_begin...arg_end].strip != ""
       command = ctx.editor.line[arg_begin...arg_end].strip
     end
 
@@ -152,7 +152,11 @@ module LoveShell
 
     if command
       commands.grepCommands(command).uniq.each do |suggestion|
-        completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], suggestion)
+        if arg_end < 2
+          completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], suggestion)
+        else
+          completions << Fancyline::Completion.new((arg_begin + 2)...arg_end, suggestion[1...suggestion.size], suggestion)
+        end
       end
     end
 

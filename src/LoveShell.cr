@@ -82,6 +82,9 @@ module LoveShell
     line = line.gsub(/(\|\s*)([A-Za-z0-9-]*)/) do
       "#{$1}#{$2.colorize(COMMAND_COLOR).mode(:bold)}"
     end
+    line = line.gsub(/(\&\s*)([A-Za-z0-9-]*)/) do
+      "#{$1}#{$2.colorize(COMMAND_COLOR).mode(:bold)}"
+    end
 
     line = line.gsub(/ --?[A-Za-z0-9-\--_]*/, &.colorize(ARG_COLOR))
     line = line.gsub(/"(?:[^"\\]|\\.)*"/, &.colorize(STRING_COLOR).mode(:underline))

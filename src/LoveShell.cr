@@ -13,10 +13,11 @@ require "./helper"
 def get_command(ctx)
   line = ctx.editor.line
   cursor = ctx.editor.cursor.clamp(0, line.size - 1)
-  pipe = line.rindex('|', cursor)
+  pipe = line.rindex('|', cursor) || line.rindex('&', cursor)
+  and = line.rindex('&', cursor)
   line = line[(pipe + 1)..-1] if pipe
 
-  line.split.first?
+  {line.split.first?, pipe ? true : false}
 end
 
 module LoveShell
@@ -95,7 +96,7 @@ module LoveShell
   fancy.sub_info.add do |ctx, yielder|
     lines = yielder.call(ctx) # First run the next part of the middleware chain
 
-    if (command = get_command(ctx)) && help_line_enabled # Grab the command
+    if (command = get_command(ctx)[0]) && help_line_enabled # Grab the command
       if (!command.includes? "\"") && (!command.includes? "\'") && (!command.includes? "\(") && (!command.includes? "\)") && (!command.includes? "&&&")  && (!command.includes? ";;")
         if TRANSLATE == "on"
           help_line = `whatis --locale=#{begin ENV["LANG"].to_s[0, 2] rescue "en" end} #{command} 2> /dev/null`.lines.first?
@@ -132,7 +133,9 @@ module LoveShell
     arg_end = ctx.editor.line.index(' ', arg_begin + 1) || ctx.editor.line.size
     range = (arg_begin + 1)...arg_end
 
-    if (get_command(ctx) != ctx.editor.line[arg_begin...arg_end].strip) || ctx.editor.line[arg_begin...arg_end].strip.includes?("./")
+    getCmd = get_command(ctx)
+
+    if (getCmd[0] != ctx.editor.line[arg_begin...arg_end].strip) || ctx.editor.line[arg_begin...arg_end].strip.includes?("./")
       path = ctx.editor.line[range].strip
     elsif ctx.editor.line[arg_begin...arg_end].strip != ""
       command = ctx.editor.line[arg_begin...arg_end].strip
@@ -151,11 +154,16 @@ module LoveShell
     end
 
     if command
+      # puts "begin #{arg_begin} && end #{arg_end}"
       commands.grepCommands(command).uniq.each do |suggestion|
         if arg_end < 2
           completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], suggestion)
         else
-          completions << Fancyline::Completion.new((arg_begin + 2)...arg_end, suggestion[1...suggestion.size], suggestion)
+          if getCmd[1]
+            completions << Fancyline::Completion.new((arg_begin + 1)...arg_end, suggestion, suggestion)
+          else
+            completions << Fancyline::Completion.new((arg_begin + 1)...arg_end, suggestion[1...suggestion.size], suggestion)
+          end
         end
       end
     end
@@ -166,7 +174,7 @@ module LoveShell
   # MISC KEYBINDS
 
    fancy.actions.set Fancyline::Key::Control::CtrlH do |ctx|
-    if command = get_command(ctx)
+    if command = get_command(ctx)[0]
       if TRANSLATE == "on"
         system("man --locale=#{begin ENV["LANG"].to_s[0, 2] rescue "en" end} #{command}")
       else

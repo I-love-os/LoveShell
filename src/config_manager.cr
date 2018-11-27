@@ -22,33 +22,37 @@ class ConfigManager
   @git_diff_color : (Colorize::ColorRGB | Symbol)
   @font_color : (Colorize::ColorRGB | Symbol)
 
+  CONFIG_FOLDER = "#{ENV["HOME"]}/.config/Love"
+  CONFIG_PATH   = "#{CONFIG_FOLDER}/shell.conf"
+  SCHEMES_PATH  = "#{CONFIG_FOLDER}/schemes.conf"
 
-  CONFIG_PATH   = "#{ENV["HOME"]}/.config/Love/shell.conf"
-  SCHEMES_PATH  = "#{ENV["HOME"]}/.config/Love/schemes.conf"
-  CONFIG_FOLDER = "#{ENV["HOME"]}/.config/Love/"
-  NO_TRUECOLOR  = begin ((!ENV["TERM"].includes?("256color")) || (CONFIG.as_s("color_scheme") == "no_truecolor")) rescue false end
-
-
-
-  if NO_TRUECOLOR
-    puts "The terminal you're using doesn't support true color. Forcing the no_truecolor color scheme."
+  unless Dir.exists?(CONFIG_FOLDER)
+   puts "No config directory found. Creating #{CONFIG_FOLDER}..."
+   FileUtils.mkdir(CONFIG_FOLDER)
   end
 
-  if !File.directory?(CONFIG_FOLDER)
-    puts "No config directory found. Creating #{CONFIG_FOLDER}..."
-    FileUtils.mkdir(CONFIG_FOLDER)
-  end
-
-  if !File.exists?(CONFIG_PATH)
+  unless File.exists?(CONFIG_PATH)
     puts "No configuration file found. Creating a new one..."
     File.write(CONFIG_PATH, DEFAULT_CONFIG)
     puts "Populating it with default settings..."
   end
 
-  if !File.exists?(SCHEMES_PATH)
+  unless File.exists?(SCHEMES_PATH)
     puts "No color scheme file found. Creating a new one..."
     File.write(SCHEMES_PATH, DEFAULT_SCHEMES)
     puts "Populating it with default color schemes..."
+  end
+
+  NO_TRUECOLOR  = begin
+    x = Process.new("tput colors", shell: true, output: Process::Redirect::Pipe).output.read_line.to_i
+    x != 256 || (CONFIG.as_s("color_scheme") == "no_truecolor")
+  rescue exception
+    puts exception
+    false
+  end
+
+  if NO_TRUECOLOR
+    puts "The terminal you're using doesn't support true color. Forcing the no_truecolor color scheme."
   end
 
   CONFIG = Config.file(CONFIG_PATH)

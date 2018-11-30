@@ -142,7 +142,7 @@ module LoveShell
 
     case
     when case getCmd[0]
-      when "cd", "mkdir", "rmdir", "ls", "vim"
+    when "cd", "mkdir", "rmdir", "ls"
         dirs_only = true
         path = ctx.editor.line[range].strip
       end

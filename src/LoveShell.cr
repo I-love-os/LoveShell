@@ -135,29 +135,43 @@ module LoveShell
     arg_begin = ctx.editor.line.rindex(' ', ctx.editor.cursor - 1) || 0
     arg_end = ctx.editor.line.index(' ', arg_begin + 1) || ctx.editor.line.size
     range = (arg_begin + 1)...arg_end
-
+    typed = ctx.editor.line[arg_begin...arg_end].strip
     getCmd = get_command(ctx)
 
-    if (getCmd[0] != ctx.editor.line[arg_begin...arg_end].strip) || ctx.editor.line[arg_begin...arg_end].strip.includes?("./")
+    # puts getCmd
+
+    case
+    when getCmd[0] == "cd"
+      dirs_only = true
       path = ctx.editor.line[range].strip
-    elsif ctx.editor.line[arg_begin...arg_end].strip != ""
+    when typed == ""
+    when typed.match(/\.|\//)
+      path = ctx.editor.line[range].strip
+    when typed.starts_with?("#{getCmd[0]}")
       command = ctx.editor.line[arg_begin...arg_end].strip
+    else
+      path = ctx.editor.line[range].strip
     end
 
     if path
       path = path.sub("~", "#{ENV["HOME"]}")
-      if ctx.editor.line[arg_begin...arg_end].strip.includes? "./"
-        path = "." + path
-      end
-      Dir["#{path}*"].each do |suggestion|
+
+      begin_line = typed.includes?("./") && !path.match(/^\.\//)
+
+      Dir[begin_line ? ".#{path}*" : "#{path}*"].each do |suggestion|
+        if dirs_only
+          if File.file? suggestion
+            next
+          end
+        end
+        suggestion = begin_line ? suggestion.lchop(".") : suggestion
         base = File.basename(suggestion)
         suggestion += '/' if Dir.exists? suggestion
-        completions << Fancyline::Completion.new(ctx.editor.line[arg_begin...arg_end].strip.includes?("./") ? arg_begin...arg_end : range, suggestion.sub("#{ENV["HOME"]}", "~"), base)
+        completions << Fancyline::Completion.new(range, suggestion.sub("#{ENV["HOME"]}", "~"), base)
       end
     end
 
     if command
-      # puts "begin #{arg_begin} && end #{arg_end}"
       commands.grepCommands(command).uniq.each do |suggestion|
         if arg_end == 2
           completions << Fancyline::Completion.new(range, suggestion[1...suggestion.size], suggestion)

@@ -141,9 +141,11 @@ module LoveShell
     # puts getCmd
 
     case
-    when getCmd[0] == "cd"
-      dirs_only = true
-      path = ctx.editor.line[range].strip
+    when case getCmd[0]
+      when "cd", "mkdir", "rmdir", "ls", "vim"
+        dirs_only = true
+        path = ctx.editor.line[range].strip
+      end
     when typed == ""
     when typed.match(/\.|\//)
       path = ctx.editor.line[range].strip

@@ -241,16 +241,35 @@ module LoveShell
 
   historian.log(%(#<3# Opened LoveShell instance with PID ) + "#{Process.pid}" + " on " + "#{Time.now}")
 
+  temp_cmd = ""
+
+  current_prompt = prompt.lovePrompt
+
   begin
-    while input = fancy.readline(prompt.lovePrompt, rprompt: prompt.right)
+    while input = fancy.readline(current_prompt, rprompt: prompt.right)
+      last_char = input.chars.last?
+      if last_char.to_s == "\\"
+        temp_cmd += input
+        current_prompt = "> "
+        next
+      elsif temp_cmd != ""
+        temp_cmd += input
+        current_prompt = prompt.lovePrompt
+        input = temp_cmd
+        temp_cmd = ""
+      end
+
       historian.log(input)
       historian.resetPosition
       historian.clearSavedLine
+
       args = input.split(" ")
       break if input == "exit"
 
       als = [] of Int32
       args.each_index { |x| als << x if aliases.has_key? args[x] }
+
+
 
       if args[0] == "cd"
         begin

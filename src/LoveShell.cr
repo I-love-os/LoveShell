@@ -249,12 +249,11 @@ module LoveShell
     while input = fancy.readline(current_prompt, rprompt: prompt.right)
       last_char = input.chars.last?
       if last_char.to_s == "\\"
-        temp_cmd += input
+        temp_cmd += input.rchop('\\')
         current_prompt = "> "
         next
       elsif temp_cmd != ""
         temp_cmd += input
-        current_prompt = prompt.lovePrompt
         input = temp_cmd
         temp_cmd = ""
       end
@@ -311,6 +310,7 @@ module LoveShell
       else
         system(input)
       end
+      current_prompt = prompt.lovePrompt
     end
     historian.log(%(#<3# Closed LoveShell instance with PID ) + "#{Process.pid}" + " on " + "#{Time.now}")
   rescue err : Fancyline::Interrupt

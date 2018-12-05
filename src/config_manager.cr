@@ -98,7 +98,7 @@ class ConfigManager
 
     help_line: "on"
 
-    # Help tip - Toggles the visibility of the "Ctrl+H for more info" tooltip when the help line is enabled.
+    # Help tip - Toggles the visibility of the "Alt+M for more info" tooltip when the help line is enabled.
     # Available values are "off", or "on".
 
     help_tip: "on"

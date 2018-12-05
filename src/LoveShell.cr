@@ -114,7 +114,7 @@ module LoveShell
           words.map { |word| line = "#{line} #{word}" }
 
           if HELP_TIP == "on"
-            lines << line << "(Ctrl+H for more info)"
+            lines << line << "(Alt+M for more info)"
           else
             lines << line
           end
@@ -192,7 +192,7 @@ module LoveShell
 
   # MISC KEYBINDS
 
-   fancy.actions.set Fancyline::Key::Control::CtrlH do |ctx|
+   fancy.actions.set Fancyline::Key::Control::AltM do |ctx|
     if command = get_command(ctx)[0]
       if TRANSLATE == "on"
         system("man --locale=#{begin ENV["LANG"].to_s[0, 2] rescue "en" end} #{command}")
@@ -206,8 +206,13 @@ module LoveShell
     help_line_enabled = !help_line_enabled
     ctx.clear_info
   end
+
   fancy.actions.set Fancyline::Key::Control::CtrlC do |ctx|
     # Do Nothing
+  end
+
+  fancy.actions.set Fancyline::Key::Control::CtrlH do |ctx|
+    ctx.editor.remove_at_cursor -1
   end
 
   Signal::INT.trap do

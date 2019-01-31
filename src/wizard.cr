@@ -12,6 +12,11 @@ class Wizard
   @changes = false
 
   def start
+
+    @fancy.actions.set Fancyline::Key::Control::CtrlH do |ctx|
+      ctx.editor.remove_at_cursor -1
+    end
+
     while input = @fancy.readline(@prompt.wizardPrompt)
       args = input.split(" ")
       if args.size == 2
@@ -58,6 +63,8 @@ class Wizard
         else
           @helper.getHelp(value.to_s)
         end
+      elsif key == "info" || key == "config" || key == "properties"
+        system("cat #{ENV["HOME"]}/.config/Love/shell.conf")
       else
         puts @config.getProperty(key)
       end

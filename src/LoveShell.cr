@@ -44,6 +44,7 @@ module LoveShell
   HELP_LINE     = CONFIG.getHelpLine
   HELP_TIP      = CONFIG.getHelpTip
   TRANSLATE     = CONFIG.getTranslate
+  TR_LANG       = CONFIG.getTrLang
 
   # ARGUMENT PARSING
 
@@ -102,7 +103,7 @@ module LoveShell
     if (command = get_command(ctx)[0]) && help_line_enabled # Grab the command
       if (!command.includes? "\"") && (!command.includes? "\'") && (!command.includes? "\(") && (!command.includes? "\)") && (!command.includes? "&&&")  && (!command.includes? ";;")
         if TRANSLATE == "on"
-          help_line = `whatis --locale=#{begin ENV["LANG"].to_s[0, 2] rescue "en" end} #{command} 2> /dev/null`.lines.first?
+          help_line = `whatis --locale=#{TR_LANG} #{command} 2> /dev/null`.lines.first?
         else
           help_line = `whatis #{command} 2> /dev/null`.lines.first?
         end
@@ -195,7 +196,7 @@ module LoveShell
    fancy.actions.set Fancyline::Key::Control::AltM do |ctx|
     if command = get_command(ctx)[0]
       if TRANSLATE == "on"
-        system("man --locale=#{begin ENV["LANG"].to_s[0, 2] rescue "en" end} #{command}")
+        system("man --locale=#{TR_LANG} #{command}")
       else
         system("man #{command}")
       end

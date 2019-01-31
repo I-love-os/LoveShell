@@ -12,7 +12,8 @@ class ConfigManager
   @help_line : String
   @help_tip : String
   @legacy_symbol : String
-  @translate: String
+  @translate : String
+  @tr_lang : String
   @color_scheme : String
   @hist_length : Int32
 
@@ -51,7 +52,7 @@ class ConfigManager
     false
   end
 
-  if NO_TRUECOLOR
+  if NO_TRUECOLOR && CONFIG.as_s("color_scheme") != "no_truecolor"
     puts "The terminal you're using doesn't support true color. Forcing the no_truecolor color scheme."
   end
 
@@ -108,9 +109,16 @@ class ConfigManager
 
     legacy_symbol: "off"
 
-    # Translate - The shell will try to translate whatis and man into your language of choice.
+    # Translate - Force the shell to translate whatis and man into your language of choice.
+    # This may not always work, as not all programs have help articles in all languages, even more so if you don't have the language installed.
+    # Available values are: "off" or "on".
 
     translate: "on"
+
+    # Translate language - The language the shell wil try to translate to.
+    # Available values are: any language code, for example: "en" or "fr"
+
+    tr_language: "en"
 
     # History Length - dictates the length of you history file (located in ~/hist.love)
     # Available values are: any integer.
@@ -201,7 +209,8 @@ class ConfigManager
     @help_line = begin CONFIG.as_s("help_line") rescue setProperty("help_line", "on", true).to_s end
     @help_tip = begin CONFIG.as_s("help_tip") rescue setProperty("help_tip", "on", true).to_s end
     @legacy_symbol = begin CONFIG.as_s("legacy_symbol") rescue setProperty("legacy_symbol", "off", true).to_s end
-    @translate = begin CONFIG.as_s("translate") rescue setProperty("translate", "on", true).to_s end
+    @translate = begin CONFIG.as_s("translate") rescue setProperty("translate", "off", true).to_s end
+    @tr_lang = begin CONFIG.as_s("tr_language") rescue setProperty("tr_language", "en", true).to_s end
     @color_scheme = begin CONFIG.as_s("color_scheme") rescue setProperty("color_scheme", "default", true).to_s end
     @hist_length = begin CONFIG.as_i("hist_length") rescue setProperty("hist_length", 3000, true).to_s.to_i end
 
@@ -363,6 +372,10 @@ class ConfigManager
 
   def getTranslate
     @translate
+  end
+
+  def getTrLang
+    @tr_lang
   end
 
   def getColorScheme
